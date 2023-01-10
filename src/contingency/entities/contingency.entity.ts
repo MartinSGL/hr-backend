@@ -19,13 +19,13 @@ export class Contingency {
   date: Date;
 
   @Prop({ default: false })
-  half_date: boolean;
+  half_date?: boolean;
 
   @Prop({ index: true, default: 'pending', enum: status })
-  status: 'pending' | 'approved' | 'rejected' | 'canceled';
+  status?: 'pending' | 'approved' | 'rejected' | 'canceled';
 
   @Prop({ default: 'no comments' })
-  comments: string;
+  comments?: string;
 }
 
 export const ContingencySchema = SchemaFactory.createForClass(Contingency);

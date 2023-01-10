@@ -14,7 +14,7 @@ export class ContingencyService {
 
   async create(createContingencyDto: CreateContingencyDto) {
     try {
-      const contigency = await this.contingencyModel.create({
+      const contigency = await this.contingencyModel.create<Contingency>({
         folio: 'CON-090123-01',
         id_employee: 1,
         ...createContingencyDto,
