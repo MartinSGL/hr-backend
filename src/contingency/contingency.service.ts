@@ -21,7 +21,7 @@ export class ContingencyService {
       });
 
       return contigency;
-    } catch (error) {
+    } catch (error: any) {
       if (error.code === 11000) {
         throw new BadRequestException(
           `Folio already exists ${JSON.stringify(error.keyValue)}`,
