@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ContingencyService } from './contingency.service';
-import { ContingencyController } from './contingency.controller';
+import { ContingenciesService } from './contingencies.service';
+import { ContingenciesController } from './contingencies.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Contingency, ContingencySchema } from './entities/contingency.entity';
 
 @Module({
-  controllers: [ContingencyController],
-  providers: [ContingencyService],
+  controllers: [ContingenciesController],
+  providers: [ContingenciesService],
   imports: [
     MongooseModule.forFeature([
       {
@@ -16,4 +16,4 @@ import { Contingency, ContingencySchema } from './entities/contingency.entity';
     ]),
   ],
 })
-export class ContingencyModule {}
+export class ContingenciesModule {}

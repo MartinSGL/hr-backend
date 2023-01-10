@@ -1,11 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-
-const status = {
-  pending: 'pending',
-  approved: 'approved',
-  rejected: 'rejected',
-  canceled: 'canceled',
-};
+import { Status, status } from 'src/common/interfaces/status.interface';
 
 @Schema()
 export class Contingency {
@@ -21,8 +15,8 @@ export class Contingency {
   @Prop({ default: false })
   half_date?: boolean;
 
-  @Prop({ index: true, default: 'pending', enum: status })
-  status?: 'pending' | 'approved' | 'rejected' | 'canceled';
+  @Prop({ default: 'pending', enum: status, index: true })
+  status?: Status;
 
   @Prop({ default: 'no comments' })
   comments?: string;

@@ -7,27 +7,27 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ContingencyService } from './contingency.service';
+import { ContingenciesService } from './contingencies.service';
 import { CreateContingencyDto } from './dto/create-contingency.dto';
 import { UpdateContingencyDto } from './dto/update-contingency.dto';
 
-@Controller('contingency')
-export class ContingencyController {
-  constructor(private readonly contingencyService: ContingencyService) {}
+@Controller('contingencies')
+export class ContingenciesController {
+  constructor(private readonly contingenciesService: ContingenciesService) {}
 
   @Post()
   create(@Body() createContingencyDto: CreateContingencyDto) {
-    return this.contingencyService.create(createContingencyDto);
+    return this.contingenciesService.create(createContingencyDto);
   }
 
   @Get()
   findAll() {
-    return this.contingencyService.findAll();
+    return this.contingenciesService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.contingencyService.findOne(+id);
+    return this.contingenciesService.findOne(+id);
   }
 
   @Patch(':id')
@@ -35,11 +35,11 @@ export class ContingencyController {
     @Param('id') id: string,
     @Body() updateContingencyDto: UpdateContingencyDto,
   ) {
-    return this.contingencyService.update(+id, updateContingencyDto);
+    return this.contingenciesService.update(+id, updateContingencyDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.contingencyService.remove(+id);
+    return this.contingenciesService.remove(+id);
   }
 }

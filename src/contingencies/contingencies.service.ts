@@ -6,7 +6,7 @@ import { UpdateContingencyDto } from './dto/update-contingency.dto';
 import { Contingency } from './entities/contingency.entity';
 
 @Injectable()
-export class ContingencyService {
+export class ContingenciesService {
   constructor(
     @InjectModel(Contingency.name)
     private readonly contingencyModel: Model<Contingency>,
@@ -31,7 +31,7 @@ export class ContingencyService {
   }
 
   findAll() {
-    return `otra cosa`;
+    return `This action returns all contingencies`;
   }
 
   findOne(id: number) {
