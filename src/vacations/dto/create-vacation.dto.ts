@@ -1,17 +1,12 @@
 import {
   IsBoolean,
   IsDateString,
-  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
-import { status, Status } from 'src/common/interfaces/status.interface';
 
 export class CreateVacationDto {
-  @IsString()
-  folio: string;
-
   @IsDateString()
   init_date: Date;
 
@@ -23,11 +18,8 @@ export class CreateVacationDto {
   half_date?: Date[];
 
   @IsNotEmpty()
+  @IsString()
   client_evidence: string;
-
-  @IsEnum(status)
-  @IsOptional()
-  status?: Status;
 
   @IsOptional()
   comments?: string;
