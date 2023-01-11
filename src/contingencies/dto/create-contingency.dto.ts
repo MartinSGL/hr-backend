@@ -1,5 +1,4 @@
-import { IsBoolean, IsDateString, IsEnum, IsOptional } from 'class-validator';
-import { status, Status } from 'src/common/interfaces/status.interface';
+import { IsBoolean, IsDateString, IsOptional } from 'class-validator';
 
 export class CreateContingencyDto {
   @IsDateString()
@@ -8,10 +7,6 @@ export class CreateContingencyDto {
   @IsBoolean()
   @IsOptional()
   half_date?: boolean;
-
-  @IsEnum(status)
-  @IsOptional()
-  status?: Status;
 
   @IsOptional()
   comments?: string;

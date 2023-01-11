@@ -21,7 +21,7 @@ export class ContingenciesController {
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.contingenciesService.findAll();
   }
 
