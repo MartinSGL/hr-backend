@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Status, status } from 'src/common/interfaces/status.interface';
 
-@Schema()
+@Schema({ timestamps: true })
 export class Contingency {
   @Prop({ required: true, unique: true })
   folio: string;
@@ -18,8 +18,14 @@ export class Contingency {
   @Prop({ default: 'pending', enum: status, index: true })
   status?: Status;
 
-  @Prop({ default: 'no comments' })
+  @Prop({ default: '' })
+  reason?: string;
+
+  @Prop({ default: '' })
   comments?: string;
+
+  @Prop({ required: true })
+  id_tm: number;
 }
 
 export const ContingencySchema = SchemaFactory.createForClass(Contingency);

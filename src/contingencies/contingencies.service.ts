@@ -17,6 +17,7 @@ export class ContingenciesService {
       const contigency = await this.contingencyModel.create<Contingency>({
         folio: 'CON-090123-01',
         id_employee: 1,
+        id_tm: 2,
         ...createContingencyDto,
       });
 
@@ -30,8 +31,12 @@ export class ContingenciesService {
     }
   }
 
-  findAll() {
-    return `This action returns all contingencies`;
+  async findAll() {
+    const contingency = await this.contingencyModel.find({ status: 'pending' });
+    return {
+      error: false,
+      data: contingency,
+    };
   }
 
   findOne(id: number) {
