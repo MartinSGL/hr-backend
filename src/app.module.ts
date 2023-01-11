@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ContingenciesModule } from './contingencies/contingencies.module';
 import { HolidaysModule } from './holidays/holidays.module';
+import { VacationsModule } from './vacations/vacations.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { HolidaysModule } from './holidays/holidays.module';
     // Application Mudules
     ContingenciesModule,
     HolidaysModule,
+    VacationsModule,
   ],
 })
 export class AppModule {}
