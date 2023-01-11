@@ -18,7 +18,10 @@ export class Contingency {
   @Prop({ default: 'pending', enum: status, index: true })
   status?: Status;
 
-  @Prop({ default: 'no comments' })
+  @Prop({ default: '' })
+  reason?: string;
+
+  @Prop({ default: '' })
   comments?: string;
 
   @Prop({ required: true })
