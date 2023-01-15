@@ -10,9 +10,5 @@ export class CreateContingencyDto {
 
   @IsOptional()
   @IsString()
-  reason?: string;
-
-  @IsOptional()
-  @IsString()
   comments?: string;
 }
