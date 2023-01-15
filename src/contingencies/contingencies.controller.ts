@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
+import { ParseMongoIdPipe } from 'src/common/pipe/parse-mongo-id.pipe';
 import { ContingenciesService } from './contingencies.service';
 import { CreateContingencyDto } from './dto/create-contingency.dto';
 import { UpdateContingencyDto } from './dto/update-contingency.dto';
@@ -21,25 +22,34 @@ export class ContingenciesController {
   }
 
   @Get()
-  async findAll() {
+  findAll() {
     return this.contingenciesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.contingenciesService.findOne(+id);
+  findOne(@Param('id', ParseMongoIdPipe) id: string) {
+    return this.contingenciesService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseMongoIdPipe) id: string,
     @Body() updateContingencyDto: UpdateContingencyDto,
   ) {
-    return this.contingenciesService.update(+id, updateContingencyDto);
+    return this.contingenciesService.update(id, updateContingencyDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.contingenciesService.remove(+id);
+    return this.contingenciesService.remove(id);
+  }
+
+  @Patch('updateStatus/:id')
+  updateStatus(
+    @Param('id', ParseMongoIdPipe) id: string,
+    //TODO: create another DTO that include status and optional reason, change updateContingencyDto by new DTO
+    @Body() updateContingencyDto: UpdateContingencyDto,
+  ) {
+    return this.contingenciesService.updateStatus(id, updateContingencyDto);
   }
 }
