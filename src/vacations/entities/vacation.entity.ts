@@ -16,7 +16,7 @@ export class Vacation {
   final_date: Date;
 
   @Prop([Date])
-  half_date?: Date[];
+  half_days?: Date[];
 
   @Prop({ required: true })
   client_evidence: string;

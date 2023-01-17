@@ -15,7 +15,7 @@ export class CreateVacationDto {
 
   @IsBoolean()
   @IsOptional()
-  half_date?: Date[];
+  half_days?: Date[];
 
   @IsNotEmpty()
   @IsString()

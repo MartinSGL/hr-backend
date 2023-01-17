@@ -13,7 +13,7 @@ export class Contingency {
   date: Date;
 
   @Prop({ default: false })
-  half_date?: boolean;
+  half_day?: boolean;
 
   @Prop({ default: 'pending', enum: status, index: true })
   status?: Status;
