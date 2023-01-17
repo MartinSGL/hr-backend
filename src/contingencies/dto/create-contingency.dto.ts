@@ -1,4 +1,10 @@
-import { IsBoolean, IsDateString, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateContingencyDto {
   @IsDateString()
@@ -6,9 +12,10 @@ export class CreateContingencyDto {
 
   @IsBoolean()
   @IsOptional()
-  half_date?: boolean;
+  half_day?: boolean;
 
   @IsOptional()
+  @IsNotEmpty()
   @IsString()
   comments?: string;
 }
