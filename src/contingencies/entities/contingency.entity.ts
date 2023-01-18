@@ -19,10 +19,10 @@ export class Contingency {
   status?: Status;
 
   @Prop({ default: '' })
-  reason?: string;
+  comments?: string;
 
   @Prop({ default: '' })
-  comments?: string;
+  observations?: string;
 
   @Prop({ required: true })
   id_tm: number;

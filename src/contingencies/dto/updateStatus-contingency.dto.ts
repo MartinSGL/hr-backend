@@ -8,5 +8,5 @@ export class UpdateStatusContingencyDto {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  reason?: string;
+  observations?: string;
 }
