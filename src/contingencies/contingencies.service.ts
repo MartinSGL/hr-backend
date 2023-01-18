@@ -103,15 +103,15 @@ export class ContingenciesService {
     id: string,
     updateStatusContingencyDto: UpdateStatusContingencyDto,
   ) {
-    //validate that if the status is rejected then the reason is not empty
+    //validate that if the status is rejected then the observations field is not empty
     if (
       updateStatusContingencyDto.status === status.rejected &&
-      !updateStatusContingencyDto.reason
+      !updateStatusContingencyDto.observations
     ) {
-      throw new BadRequestException('Reason must not be empty');
+      throw new BadRequestException('Observations must not be empty');
     }
 
-    //find the document, change the status and reason only if it is rejected
+    //find the document, change the status and observations only if request is rejected
     const contingencyUpdated = await this.contingencyModel.findOneAndUpdate(
       { _id: id },
       updateStatusContingencyDto,

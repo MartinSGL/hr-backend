@@ -25,7 +25,7 @@ export class Vacation {
   status?: Status;
 
   @Prop({ default: '' })
-  comments?: string;
+  observations?: string;
 
   @Prop({ required: true })
   id_tm: number;
