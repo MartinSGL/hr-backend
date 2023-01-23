@@ -40,7 +40,10 @@ export class CommonService {
     const format_number = new_number > 9 ? new_number : `0${new_number}`;
     const format_month = month > 9 ? month : `0${month}`;
     const format_day = day > 9 ? day : `0${day}`;
-    //generate the new folio and return it
+    //generate the new folio and return it VAC-230123-01
+    //VAC = tipe of request
+    //230123 = 2023 January 23
+    //01 first request of the day
     return `${type}-${format_year}${format_month}${format_day}-${format_number}`;
   }
 }

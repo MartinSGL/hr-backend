@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateContingencyDto } from './dto/create-contingency.dto';
@@ -44,14 +48,19 @@ export class ContingenciesService {
 
       return contigency;
     } catch (error: any) {
+      // error for for violation to unique rule in entity
       if (error.code === 11000) {
         throw new BadRequestException(
           `Folio already exists ${JSON.stringify(error.keyValue)}`,
         );
       }
+      // error for any BadRequestException(status 400)
       if (error.response.statusCode === 400) {
         throw new BadRequestException(error.message);
       }
+
+      // unknow error
+      throw new InternalServerErrorException('Server Error');
     }
   }
 
@@ -68,24 +77,41 @@ export class ContingenciesService {
   }
 
   async update(id: string, updateContingencyDto: UpdateContingencyDto) {
-    /*--------------------------- Validations ----------------------------------* */
-    //validate that day is not part of the weekend
-    this.validateWeekDay(String(updateContingencyDto.date));
-    // validate day is not already taken
-    await this.valitateDate(1, updateContingencyDto.date, id);
-    // validate user has no more than 3 days
-    await this.valitateNumberDays(1, updateContingencyDto.half_day, 'update');
-    /*----------------------------------------------------------------------------* */
-    //find and update the document
-    const contingencyUpdated = await this.contingencyModel.findOneAndUpdate(
-      { _id: id },
-      updateContingencyDto,
-      { new: true },
-    );
-    //return exception in case contingency is not found
-    if (!contingencyUpdated)
-      throw new BadRequestException('Contingency is not valid');
-    return contingencyUpdated;
+    try {
+      /*--------------------------- Validations ----------------------------------* */
+      //validate that day is not part of the weekend
+      this.validateWeekDay(String(updateContingencyDto.date));
+      // validate day is not already taken
+      await this.valitateDate(1, updateContingencyDto.date, id);
+      // validate user has no more than 3 days
+      await this.valitateNumberDays(1, updateContingencyDto.half_day, 'update');
+      /*----------------------------------------------------------------------------* */
+      //find and update the document
+      const contingencyUpdated = await this.contingencyModel.findOneAndUpdate(
+        { _id: id },
+        updateContingencyDto,
+        { new: true },
+      );
+      //return exception in case contingency is not found
+      if (!contingencyUpdated)
+        throw new BadRequestException('Contingency is not valid');
+      return contingencyUpdated;
+    } catch (error: any) {
+      //TODO: make a global funcion to catch errors
+      // error for for violation to unique rule in entity
+      if (error.code === 11000) {
+        throw new BadRequestException(
+          `Folio already exists ${JSON.stringify(error.keyValue)}`,
+        );
+      }
+      // error for any BadRequestException(status 400)
+      if (error.response.statusCode === 400) {
+        throw new BadRequestException(error.message);
+      }
+
+      // unknow error
+      throw new InternalServerErrorException('Server Error, check logs');
+    }
   }
 
   async remove(id: string) {
