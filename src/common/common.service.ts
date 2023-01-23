@@ -36,10 +36,11 @@ export class CommonService {
     //turn the string into number and add 1
     const new_number = +last_number + 1;
     //format numbers in order to always get 2 digits
+    const format_year = year.toString().substring(2, 4);
     const format_number = new_number > 9 ? new_number : `0${new_number}`;
     const format_month = month > 9 ? month : `0${month}`;
     const format_day = day > 9 ? day : `0${day}`;
     //generate the new folio and return it
-    return `${type}-${format_day}${format_month}${year}-${format_number}`;
+    return `${type}-${format_year}${format_month}${format_day}-${format_number}`;
   }
 }
