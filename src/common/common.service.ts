@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { DateTime } from 'luxon';
 import { Model } from 'mongoose';
 import { Transactions } from './interfaces/transactions.interface';
@@ -45,5 +49,24 @@ export class CommonService {
     //230123 = 2023 January 23
     //01 first request of the day
     return `${type}-${format_year}${format_month}${format_day}-${format_number}`;
+  }
+
+  handleError(error: any) {
+    console.log(error);
+    // error for violation to unique rule in entity
+    if (error.code === 11000) {
+      throw new BadRequestException(
+        `Duplicate ${Object.keys(error.keyValue)[0]} : ${
+          error.keyValue[Object.keys(error.keyValue)[0]]
+        }`,
+      );
+    }
+    // error for any BadRequestException(status 400)
+    if (error.response.statusCode === 400) {
+      throw new BadRequestException(error.message);
+    }
+
+    // unknow error
+    throw new InternalServerErrorException('Server Error, check logs');
   }
 }

@@ -25,10 +25,12 @@ yarn or yarn install
 
 dev-mode
 
-- add __.env__ file and fill the enviroments viarbales acording to the __.env.template__ 
+- add __.env__ file and fill the environments variables acording to the __.env.template__
 
 - start the project
 ```
 yarn start:dev
 ```
+
+- populate the database seeders
 

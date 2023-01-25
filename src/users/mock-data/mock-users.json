@@ -1,0 +1,39 @@
+{
+    "users": [
+        {
+            "id":1,
+            "name":"Monica Ortiz Salazar",
+            "email":"monica.ortiz@improving.com",
+            "password": "12345",
+            "date_admission": "2017/08/22"
+        },
+        {
+            "id":2,
+            "name":"Martin Salvador Gaytan Lugo",
+            "email":"martin.gaytan@improving.com",
+            "password": "12345",
+            "date_admission": "2022/02/08"
+        },
+        {
+            "id":3,
+            "name":"Adrian Garcia Saaib",
+            "email":"adrian.garcia@improving.com",
+            "password": "12345",
+            "date_admission": "2022/02/08"
+        },
+        {
+            "id":4,
+            "name":"Irasema Mayta Serrano Jimenez",
+            "email":"irasema.serrano@improving.com",
+            "password": "12345",
+            "date_admission": "2022/02/08"
+        },
+        {
+            "id":5,
+            "name":"Carlos Javier Diaz Flores",
+            "email":"carlos.diaz@improving.com",
+            "password": "12345",
+            "date_admission": "2022/02/08"
+        }
+    ]
+}

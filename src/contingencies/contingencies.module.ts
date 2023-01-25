@@ -4,6 +4,7 @@ import { ContingenciesController } from './contingencies.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Contingency, ContingencySchema } from './entities/contingency.entity';
 import { CommonModule } from 'src/common/common.module';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   controllers: [ContingenciesController],
@@ -16,6 +17,7 @@ import { CommonModule } from 'src/common/common.module';
         schema: ContingencySchema,
       },
     ]),
+    UsersModule,
   ],
 })
 export class ContingenciesModule {}

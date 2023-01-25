@@ -24,8 +24,8 @@ export class Contingency {
   @Prop({ default: '' })
   observations?: string;
 
-  @Prop({ required: true })
-  id_tm: number;
+  @Prop({ required: true, default: 0 })
+  id_tm?: number;
 }
 
 export const ContingencySchema = SchemaFactory.createForClass(Contingency);
