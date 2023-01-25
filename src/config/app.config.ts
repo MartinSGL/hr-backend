@@ -6,4 +6,6 @@ export const EnvConfiguration = () => ({
   //admin user
   email: process.env.EMAIL,
   role: process.env.ROLE || 'assistant',
+  //JWT
+  jwt: process.env.JWT_SECRET,
 });

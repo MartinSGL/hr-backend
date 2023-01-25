@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Roles } from 'src/users/users.interface';
 import { UsersService } from '../users/users.service';
+import { SuperRoles } from '../../dist/users/interfaces';
 
 @Injectable()
 export class SeedsService {
@@ -12,7 +12,7 @@ export class SeedsService {
   async setAdminInfo() {
     //get the info from env file
     const email = this.configServise.get<string>('EMAIL');
-    const role = this.configServise.get<Roles>('ROLE');
+    const role = this.configServise.get<SuperRoles>('ROLE');
 
     //validate that data exists
     if (!email || !role) {

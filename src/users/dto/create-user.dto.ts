@@ -1,10 +1,10 @@
 import { IsEmail, IsEnum } from 'class-validator';
-import { Roles, roles } from '../users.interface';
+import { SuperRoles, superRoles } from '../interfaces';
 
 export class CreateUserDto {
   @IsEmail()
   email: string;
 
-  @IsEnum(roles)
-  role: Roles;
+  @IsEnum(superRoles)
+  role: SuperRoles;
 }
