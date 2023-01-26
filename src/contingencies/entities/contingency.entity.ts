@@ -10,6 +10,9 @@ export class Contingency {
   id_employee: number;
 
   @Prop({ required: true })
+  name_employee: string;
+
+  @Prop({ required: true })
   date: Date;
 
   @Prop({ default: false })

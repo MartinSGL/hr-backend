@@ -46,6 +46,7 @@ export class ContingenciesService {
       const contigency = await this.contingencyModel.create<Contingency>({
         folio: folio,
         id_employee: user.id,
+        name_employee: user.name,
         ...createContingencyDto,
       });
 
