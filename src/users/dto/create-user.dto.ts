@@ -1,6 +1,5 @@
 import { IsEmail, IsEnum } from 'class-validator';
-import { SuperRoles } from '../interfaces';
-import { superRoles } from '../interfaces/rolesInterface';
+import { superRoles, SuperRoles } from '../interfaces/rolesInterface';
 
 export class CreateUserDto {
   @IsEmail()
