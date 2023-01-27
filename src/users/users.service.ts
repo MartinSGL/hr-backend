@@ -63,9 +63,11 @@ export class UsersService {
     });
 
     return {
-      name: user.name,
-      role: tm_user ? tm_user.role : 'employee',
-      token: this.getJwtToken({ email: user.email }),
+      token: this.getJwtToken({
+        name: user.name,
+        email: user.email,
+        role: tm_user ? tm_user.role : 'employee',
+      }),
     };
   }
 
