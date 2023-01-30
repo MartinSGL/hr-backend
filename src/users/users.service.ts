@@ -7,9 +7,8 @@ import {
 import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
-import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
-import { LoginUserDto } from './dto/login-user.dto';
+import { LoginUserDto, CreateUserDto } from './dto';
 import * as mockData from './mock-data/mock-users.json';
 import { LoginResponse, JwtPayload } from './interfaces';
 
@@ -63,9 +62,11 @@ export class UsersService {
     });
 
     return {
-      name: user.name,
-      role: tm_user ? tm_user.role : 'employee',
-      token: this.getJwtToken({ email: user.email }),
+      token: this.getJwtToken({
+        name: user.name,
+        email: user.email,
+        role: tm_user ? tm_user.role : 'employee',
+      }),
     };
   }
 

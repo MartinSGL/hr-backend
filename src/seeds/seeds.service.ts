@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { SuperRoles } from 'src/users/interfaces/rolesInterface';
 import { UsersService } from '../users/users.service';
-import { SuperRoles } from '../../dist/users/interfaces';
 
 @Injectable()
 export class SeedsService {

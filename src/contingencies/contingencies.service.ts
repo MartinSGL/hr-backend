@@ -1,11 +1,13 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateContingencyDto } from './dto/create-contingency.dto';
-import { UpdateContingencyDto } from './dto/update-contingency.dto';
+import {
+  CreateContingencyDto,
+  UpdateContingencyDto,
+  UpdateStatusContingencyDto,
+} from './dto';
 import { Contingency } from './entities/contingency.entity';
 import { CommonService } from '../common/common.service';
-import { UpdateStatusContingencyDto } from './dto/updateStatus-contingency.dto';
 import { status } from 'src/common/interfaces/status.interface';
 import { DateTime } from 'luxon';
 import { UserInformation } from 'src/users/interfaces';

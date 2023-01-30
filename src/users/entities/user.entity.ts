@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { SuperRoles, superRoles } from '../interfaces';
+import { superRoles, SuperRoles } from '../interfaces/rolesInterface';
 //this entity is for talent manager users
 @Schema({ timestamps: true })
 export class User {
