@@ -181,6 +181,7 @@ export class ContingenciesService {
             $gte: first_day,
             $lte: last_day,
           },
+          status: { $or: ['pending', 'approved', 'rejected'] },
         },
       },
       {
