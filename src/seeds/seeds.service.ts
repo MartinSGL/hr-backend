@@ -9,6 +9,10 @@ export class SeedsService {
     private readonly usersService: UsersService,
     private readonly configServise: ConfigService,
   ) {}
+  async executeSeeders(){
+    this.setAdminInfo();
+  }
+  async setSeniorityInfo(){}
   async setAdminInfo() {
     //get the info from env file
     const email = this.configServise.get<string>('EMAIL');
