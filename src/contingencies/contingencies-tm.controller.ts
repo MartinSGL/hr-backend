@@ -9,13 +9,13 @@ import { UpdateStatusContingencyDto } from './dto';
 export class ContingenciesControllerTM {
   constructor(private readonly contingenciesService: ContingenciesService) {}
 
-  @Get('request')
+  @Get('requests')
   @Auth('admin') // only users with role 'admin' can use this
   findAllStatus(@Query() paginationDto: PaginationDto) {
     return this.contingenciesService.findAllByStatus(paginationDto);
   }
 
-  @Patch('update-status/:id')
+  @Patch('requests/update-status/:id')
   @Auth('admin')
   updateStatus(
     @Param('id', ParseMongoIdPipe) id: string,
