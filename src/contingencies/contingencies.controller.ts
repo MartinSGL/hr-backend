@@ -6,7 +6,9 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { ParseMongoIdPipe } from 'src/common/pipe/parse-mongo-id.pipe';
 import { UserInformation } from 'src/users/interfaces';
 import { Auth, GetUser } from '../users/decorator';
@@ -29,8 +31,11 @@ export class ContingenciesController {
   }
 
   @Get()
-  findAll(@GetUser() user: UserInformation) {
-    return this.contingenciesService.findAll(user);
+  findAll(
+    @GetUser() user: UserInformation,
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return this.contingenciesService.findAll(user, paginationDto);
   }
 
   @Get(':id')

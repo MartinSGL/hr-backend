@@ -1,22 +1,28 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, PaginateModel } from 'mongoose';
 import {
   CreateContingencyDto,
   UpdateContingencyDto,
   UpdateStatusContingencyDto,
 } from './dto';
-import { Contingency } from './entities/contingency.entity';
+import {
+  Contingency,
+  ContingencyDocument,
+} from './entities/contingency.entity';
 import { CommonService } from '../common/common.service';
 import { status } from 'src/common/interfaces/status.interface';
 import { DateTime } from 'luxon';
 import { UserInformation } from 'src/users/interfaces';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Injectable()
 export class ContingenciesService {
   constructor(
     @InjectModel(Contingency.name)
     private readonly contingencyModel: Model<Contingency>,
+    @InjectModel(Contingency.name)
+    private readonly contingencyModelPag: PaginateModel<ContingencyDocument>,
     private readonly commonService: CommonService,
   ) {}
 
@@ -59,10 +65,17 @@ export class ContingenciesService {
     }
   }
 
-  async findAll(user: UserInformation) {
-    return this.contingencyModel.find({
-      id_employee: user.id,
-    });
+  async findAll(user: UserInformation, paginationDto: PaginationDto) {
+    const options = {
+      page: paginationDto.page,
+      limit: 5,
+    };
+    return this.contingencyModelPag.paginate(
+      {
+        id_employee: user.id,
+      },
+      options,
+    );
   }
 
   async findOne(id: string) {
