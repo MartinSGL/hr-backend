@@ -148,12 +148,14 @@ export class ContingenciesService {
       contingency = await this.contingencyModel.findOne({
         id_employee,
         date,
+        status: { $ne: 'canceled' },
       });
     } else {
       //update operation
       contingency = await this.contingencyModel.findOne({
         id_employee,
         date,
+        status: { $ne: 'canceled' },
         _id: { $ne: id },
       });
     }
@@ -181,7 +183,7 @@ export class ContingenciesService {
             $gte: first_day,
             $lte: last_day,
           },
-          status: { $or: ['pending', 'approved', 'rejected'] },
+          status: { $ne: 'canceled' },
         },
       },
       {
