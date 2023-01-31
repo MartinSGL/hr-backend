@@ -5,9 +5,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Contingency, ContingencySchema } from './entities/contingency.entity';
 import { CommonModule } from 'src/common/common.module';
 import { UsersModule } from 'src/users/users.module';
+import { ContingenciesControllerTM } from './contingencies-tm.controller';
 
 @Module({
-  controllers: [ContingenciesController],
+  controllers: [ContingenciesController, ContingenciesControllerTM],
   providers: [ContingenciesService],
   imports: [
     CommonModule,

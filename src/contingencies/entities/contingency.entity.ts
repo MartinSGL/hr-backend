@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 import { Status, status } from 'src/common/interfaces/status.interface';
+import * as paginate from 'mongoose-paginate-v2';
 
 @Schema({ timestamps: true })
 export class Contingency {
@@ -31,4 +33,6 @@ export class Contingency {
   id_tm?: number;
 }
 
+export interface ContingencyDocument extends Contingency, Document {}
 export const ContingencySchema = SchemaFactory.createForClass(Contingency);
+ContingencySchema.plugin(paginate);
