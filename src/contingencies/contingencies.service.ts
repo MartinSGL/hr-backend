@@ -66,16 +66,15 @@ export class ContingenciesService {
   }
 
   async findAll(user: UserInformation, paginationDto: PaginationDto) {
-    const options = {
-      page: paginationDto.page,
-      limit: 5,
-    };
-    return this.contingencyModelPag.paginate(
-      {
-        id_employee: user.id,
-      },
-      options,
-    );
+    const options = { page: paginationDto.page, limit: 5 };
+    const query = { id_employee: user.id };
+    return this.contingencyModelPag.paginate(query, options);
+  }
+
+  async findAllByStatus(paginationDto: PaginationDto) {
+    const options = { page: paginationDto.page, limit: 5 };
+    const query = { status: 'pending' };
+    return this.contingencyModelPag.paginate(query, options);
   }
 
   async findOne(id: string) {
@@ -107,7 +106,7 @@ export class ContingenciesService {
       //find and update the document
       const contingencyUpdated = await this.contingencyModel.findOneAndUpdate(
         { _id: id },
-        updateContingencyDto,
+        { ...updateContingencyDto, status: 'pending' },
         { new: true },
       );
       //return exception in case contingency is not found

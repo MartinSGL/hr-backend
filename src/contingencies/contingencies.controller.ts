@@ -56,15 +56,4 @@ export class ContingenciesController {
   remove(@Param('id') id: string) {
     return this.contingenciesService.remove(id);
   }
-
-  @Patch('update-status/:id')
-  updateStatus(
-    @Param('id', ParseMongoIdPipe) id: string,
-    @Body() updateStatusContingencyDto: UpdateStatusContingencyDto,
-  ) {
-    return this.contingenciesService.updateStatus(
-      id,
-      updateStatusContingencyDto,
-    );
-  }
 }
