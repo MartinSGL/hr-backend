@@ -1,12 +1,12 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { SeedsService } from './seeds.service';
 
-@Controller('seed')
+@Controller('seeds')
 export class SeedsController {
   constructor(private readonly seedsService: SeedsService) {}
 
-  @Get('/admin-info')
-  setAdminInfo() {
-    return this.seedsService.setAdminInfo();
+  @Get('/:password')
+  executeSeeders(@Param('password') password: string) {
+    return this.seedsService.executeSeeders(password);
   }
 }

@@ -8,4 +8,6 @@ export const EnvConfiguration = () => ({
   role: process.env.ROLE || 'assistant',
   //JWT
   jwt: process.env.JWT_SECRET,
+  //Seed password
+  seed_password: process.env.SEED_PASSWORD,
 });
