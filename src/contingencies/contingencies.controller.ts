@@ -15,7 +15,6 @@ import { Auth, GetUser } from '../users/decorator';
 import { ContingenciesService } from './contingencies.service';
 import { CreateContingencyDto } from './dto/create-contingency.dto';
 import { UpdateContingencyDto } from './dto/update-contingency.dto';
-import { UpdateStatusContingencyDto } from './dto/updateStatus-contingency.dto';
 
 @Controller('contingencies')
 @Auth() // decorator that request to the user sending a token
@@ -53,7 +52,7 @@ export class ContingenciesController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseMongoIdPipe) id: string) {
     return this.contingenciesService.remove(id);
   }
 }
