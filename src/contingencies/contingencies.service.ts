@@ -19,10 +19,13 @@ import { PaginationDto } from '../common/dto/pagination.dto';
 @Injectable()
 export class ContingenciesService {
   constructor(
+    //model for the rest of transactions that no need pagination
     @InjectModel(Contingency.name)
     private readonly contingencyModel: Model<Contingency>,
+    //model used to easier the pagination using library mongoose-paginate-v2
     @InjectModel(Contingency.name)
     private readonly contingencyModelPag: PaginateModel<ContingencyDocument>,
+    //generic services needed in contingency services (generateFolio, etc)
     private readonly commonService: CommonService,
   ) {}
 
@@ -120,7 +123,7 @@ export class ContingenciesService {
   }
 
   async remove(id: string) {
-    //find and update the document
+    //find and delete the document
     const contingencyDeleted = await this.contingencyModel.findOneAndDelete({
       _id: id,
     });
@@ -134,7 +137,7 @@ export class ContingenciesService {
     id: string,
     updateStatusContingencyDto: UpdateStatusContingencyDto,
   ) {
-    //validate that if the status is rejected then the observations field is not empty
+    //validate that if the status is rejected then the observations field must not be empty
     if (
       updateStatusContingencyDto.status === status.rejected &&
       !updateStatusContingencyDto.observations
@@ -142,7 +145,7 @@ export class ContingenciesService {
       throw new BadRequestException('Observations must not be empty');
     }
 
-    //find the document, change the status and observations only if request is rejected
+    //find the document, change the status and observations(only if request is rejected)
     const contingencyUpdated = await this.contingencyModel.findOneAndUpdate(
       { _id: id },
       updateStatusContingencyDto,
@@ -153,6 +156,7 @@ export class ContingenciesService {
     return contingencyUpdated;
   }
 
+  //valdiate that the day requested is not already taken
   private async valitateDate(id_employee: number, date: Date, id?: string) {
     let contingency;
     if (!id) {
@@ -175,6 +179,7 @@ export class ContingenciesService {
     if (contingency) throw new BadRequestException('The date is already taken');
   }
 
+  //validate that employee has still avaliables days or halfdays
   private async valitateNumberDays(
     id_employee: number,
     half_day: boolean,
@@ -244,6 +249,7 @@ export class ContingenciesService {
     }
   }
 
+  //validate contingecy is not a weekend day
   validateWeekDay(date: string) {
     //get the number of weekday
     const weekday = DateTime.fromISO(date).weekday;

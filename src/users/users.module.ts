@@ -10,7 +10,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   controllers: [UsersController],
-  //strategy is need it in order to use the guards
+  //strategy is needed in order to use the guards which protect the routes (controllers)
   providers: [UsersService, JwtStrategy],
   imports: [
     ConfigModule,

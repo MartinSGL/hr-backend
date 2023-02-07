@@ -5,16 +5,14 @@ import {
 } from '@nestjs/common';
 import { DateTime } from 'luxon';
 import { Model } from 'mongoose';
-import { Transactions } from './interfaces/transactions.interface';
+import { TypeRequest } from './interfaces/type-request-folio.interface';
 
 @Injectable()
 export class CommonService {
-  async generateFolio(
-    model: Model<any>,
-    type: Transactions[keyof Transactions],
-  ) {
+  //functon to generate folio according to the type of request
+  async generateFolio(model: Model<any>, type: TypeRequest[keyof TypeRequest]) {
     //search last today's documents
-    //TODO: get rid of the hide dependency 'DateTime' from luxon
+    //TODO: get rid of the hide dependency 'DateTime' from luxon using adapt pattern design
     const today = DateTime.now().setLocale('zh').toLocaleString();
     const tomorrow = DateTime.now()
       .plus({ days: 1 })
@@ -45,13 +43,15 @@ export class CommonService {
     const format_month = month > 9 ? month : `0${month}`;
     const format_day = day > 9 ? day : `0${day}`;
     //generate the new folio and return it VAC-230123-01
-    //VAC = tipe of request
+    //VAC = type of request
     //230123 = 2023 January 23
     //01 first request of the day
     return `${type}-${format_year}${format_month}${format_day}-${format_number}`;
   }
 
+  //function to catch errors and return answers in all try-catch services functions
   handleError(error: any) {
+    //console the error
     console.log(error);
     // error for violation to unique rule in entity
     if (error.code === 11000) {
@@ -62,11 +62,12 @@ export class CommonService {
       );
     }
     // error for any BadRequestException(status 400)
+    // most of them are validations
     if (error.response.statusCode === 400) {
       throw new BadRequestException(error.message);
     }
 
-    // unknow error
+    // any other error once if statements didn't caught the error
     throw new InternalServerErrorException('Server Error, check logs');
   }
 }

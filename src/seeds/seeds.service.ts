@@ -42,6 +42,7 @@ export class SeedsService {
     if (users.length > 0) {
       return 'Data already exist, therefore seed can not be executed';
     }
+    //insert data if info is not in db
     await this.usersService.create({ email, role });
     // return message en data
     return 'seed executed successfully';
@@ -57,7 +58,7 @@ export class SeedsService {
     if (users.length > 0) {
       return 'Data already exist, therefore seed can not be executed';
     }
-    //insert data
+    //insert data if info is not in db
     await this.seniorityService.create(this.seniorityInformation);
     //return information
     return 'seed executed successfully';
