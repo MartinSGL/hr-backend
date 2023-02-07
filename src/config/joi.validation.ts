@@ -7,7 +7,6 @@ export const JoiValidationSchema = Joi.object({
   MONGO_DB: Joi.string().min(1).required(),
   PORT: Joi.number().default(3000),
   EMAIL: Joi.string().email(),
-  ROLE: Joi.string().valid(superRoles.admin), //check that role is correct and other validations
   JWT_SECRET: Joi.string().min(1).required(),
   SEED_PASSWORD: Joi.string().required(),
 });

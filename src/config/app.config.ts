@@ -6,7 +6,6 @@ export const EnvConfiguration = () => ({
   mongodb: process.env.MONGO_DB,
   //admin user
   email: process.env.EMAIL,
-  role: process.env.ROLE || 'assistant',
   //JWT
   jwt: process.env.JWT_SECRET,
   //seed password
