@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SenioritiesService } from 'src/seniorities/seniorities.service';
-import { SuperRoles } from 'src/users/interfaces/rolesInterface';
+import { superRoles, SuperRoles } from 'src/users/interfaces/rolesInterface';
 import { UsersService } from '../users/users.service';
 import { seniority_information } from './data/seniority-information';
 
@@ -31,7 +31,7 @@ export class SeedsService {
   async setAdminInfo() {
     //get the info from env file
     const email = this.configService.get<string>('EMAIL');
-    const role = this.configService.get<SuperRoles>('ROLE');
+    const role = superRoles.admin;
 
     //check if that data exists
     if (!email || !role) {
@@ -42,6 +42,7 @@ export class SeedsService {
     if (users.length > 0) {
       return 'Data already exist, therefore seed can not be executed';
     }
+    //insert data if info is not in db
     await this.usersService.create({ email, role });
     // return message en data
     return 'seed executed successfully';
@@ -57,7 +58,7 @@ export class SeedsService {
     if (users.length > 0) {
       return 'Data already exist, therefore seed can not be executed';
     }
-    //insert data
+    //insert data if info is not in db
     await this.seniorityService.create(this.seniorityInformation);
     //return information
     return 'seed executed successfully';

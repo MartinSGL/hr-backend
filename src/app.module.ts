@@ -13,13 +13,16 @@ import { SenioritiesModule } from './seniorities/seniorities.module';
 @Module({
   imports: [
     //allow to read enviroment variables from .env file
+    //without using process.env way
     ConfigModule.forRoot({
+      //make env variables avaliable in the system check (EnvConfig file)
       load: [EnvConfiguration],
+      //validate using joi library env variables (if required variable is missing system fails)
       validationSchema: JoiValidationSchema,
     }),
     //conection to mongo db
     MongooseModule.forRoot(process.env.MONGO_DB),
-    // Application Mudules
+    // Application Modules
     ContingenciesModule,
     HolidaysModule,
     VacationsModule,

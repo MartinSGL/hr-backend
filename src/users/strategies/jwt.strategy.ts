@@ -35,6 +35,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     //make a new object without the password
     const infoUser = { ...user, password: undefined };
 
+    //this info goes to req.user and it can be retrieved
+    //in this case is retrieved with get-user decorator
     return {
       ...infoUser,
       role: tm_user ? tm_user.role : 'employee',

@@ -17,12 +17,12 @@ export class UsersService {
   constructor(
     @InjectModel(User.name)
     private readonly userService: Model<User>,
-    //this service is provided by the "JwtModule" which has the config of jwt token
+    //this service is provided by the "JwtModule" which has the config of jwt token, check users.module
     private readonly jwtService: JwtService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    //make sure email letters are lowercase
+    //turn email letters are lowercase
     createUserDto.email = createUserDto.email.toLowerCase();
     try {
       const user = await this.userService.create<User>({
@@ -70,6 +70,8 @@ export class UsersService {
     };
   }
 
+  //generate the jwt and add it the payload
+  //check jwt config in users.module file
   private getJwtToken(payload: JwtPayload) {
     const token = this.jwtService.sign(payload);
     return token;

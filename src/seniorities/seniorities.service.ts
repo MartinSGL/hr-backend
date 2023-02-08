@@ -16,6 +16,7 @@ export class SenioritiesService {
     try {
       return this.seniorityServices.insertMany(data);
     } catch (error) {
+      //global function to handdle the error
       this.commonService.handleError(error);
     }
   }

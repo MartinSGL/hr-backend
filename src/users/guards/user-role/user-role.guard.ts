@@ -12,6 +12,7 @@ import { Roles } from 'src/users/interfaces/rolesInterface';
 import { UserInformation } from '../../interfaces';
 
 @Injectable()
+//guard must return "true" in order to authorize the route
 export class UserRoleGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
   canActivate(

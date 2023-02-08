@@ -1,6 +1,7 @@
 import { Injectable, PipeTransform, BadRequestException } from '@nestjs/common';
 import { isValidObjectId } from 'mongoose';
 
+//custom pipe that allows to validate that id is a mongo _id
 @Injectable()
 export class ParseMongoIdPipe implements PipeTransform {
   transform(value: any) {
