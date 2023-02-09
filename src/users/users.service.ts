@@ -40,9 +40,14 @@ export class UsersService {
       throw new InternalServerErrorException('Server error, check logs');
     }
   }
-
-  async findAll() {
+  //Talent Managment users
+  async findAllTM() {
     return this.userService.find();
+  }
+
+  //all users from active directory
+  async findAll() {
+    return mockData.users;
   }
 
   async login(loginUserDto: LoginUserDto): Promise<LoginResponse> {
