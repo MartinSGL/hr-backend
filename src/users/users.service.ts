@@ -45,7 +45,7 @@ export class UsersService {
     return this.userService.find();
   }
 
-  //all users from active directory
+  //all employees from active directory
   async findAll() {
     return mockData.users;
   }
