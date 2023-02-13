@@ -36,11 +36,11 @@ export class ContingenciesService {
     try {
       /*--------------------------- Validations ----------------------------------* */
       //validate that day is not part of the weekend
-      this.validateWeekDay(String(createContingencyDto.date));
+      this.validateWeekEndDay(String(createContingencyDto.date));
       // validate day is not already taken
-      await this.valitateDate(user.id, createContingencyDto.date);
+      await this.valitateDay(user.id, createContingencyDto.date);
       // validate user has no more than 3 days
-      await this.valitateNumberDays(
+      await this.valitateNumberOfDays(
         user.id,
         createContingencyDto.half_day,
         'create',
@@ -71,7 +71,22 @@ export class ContingenciesService {
   async findAll(user: UserInformation, paginationDto: PaginationDto) {
     const options = { page: paginationDto.page, limit: 5 };
     const query = { id_employee: user.id };
-    return this.contingencyModelPag.paginate(query, options);
+
+    //get days and numbers of days taken
+    const { totalContingencies, days } = await this.getNumerOfDaysAndDaysTaken(
+      user.id,
+    );
+
+    const contingencies = await this.contingencyModelPag.paginate(
+      query,
+      options,
+    );
+
+    return {
+      days_taken: days,
+      total_contingencies: totalContingencies,
+      ...contingencies,
+    };
   }
 
   async findAllByStatus(paginationDto: PaginationDto) {
@@ -96,11 +111,11 @@ export class ContingenciesService {
     try {
       /*--------------------------- Validations ----------------------------------* */
       //validate that day is not part of the weekend
-      this.validateWeekDay(String(updateContingencyDto.date));
+      this.validateWeekEndDay(String(updateContingencyDto.date));
       // validate day is not already taken
-      await this.valitateDate(user.id, updateContingencyDto.date, id);
+      await this.valitateDay(user.id, updateContingencyDto.date, id);
       // validate user has no more than 3 days
-      await this.valitateNumberDays(
+      await this.valitateNumberOfDays(
         user.id,
         updateContingencyDto.half_day,
         'update',
@@ -157,7 +172,7 @@ export class ContingenciesService {
   }
 
   //valdiate that the day requested is not already taken
-  private async valitateDate(id_employee: number, date: Date, id?: string) {
+  private async valitateDay(id_employee: number, date: Date, id?: string) {
     let contingency;
     if (!id) {
       //create operation
@@ -180,11 +195,37 @@ export class ContingenciesService {
   }
 
   //validate that employee has still avaliables days or halfdays
-  private async valitateNumberDays(
+  private async valitateNumberOfDays(
     id_employee: number,
     half_day: boolean,
     operation: 'create' | 'update',
   ) {
+    //half_days return true if employee has halfdays
+    const { totalContingencies, half_days } =
+      await this.getNumerOfDaysAndDaysTaken(id_employee);
+
+    if (operation === 'create') {
+      if (totalContingencies >= 2.5 && !half_day)
+        throw new BadRequestException(
+          'You have no more avaliables contingency days (complete days)',
+        );
+
+      if (
+        (totalContingencies >= 3 && half_day) ||
+        (totalContingencies >= 3 && !half_day)
+      )
+        throw new BadRequestException(
+          'You have no more avaliables contingency days (complete and half days)',
+        );
+    } else {
+      if (totalContingencies === 3 && !half_day && half_days)
+        throw new BadRequestException(
+          'You have no more avaliables complete contingecy days',
+        );
+    }
+  }
+
+  async getNumerOfDaysAndDaysTaken(id_employee: number) {
     //get the current day
     //TODO: get rid of this hide dependency (DateTime)
     const { year } = DateTime.now();
@@ -207,17 +248,23 @@ export class ContingenciesService {
         $group: {
           _id: '$half_day',
           count: { $sum: 1 },
+          days: { $push: '$date' },
         },
       },
     ];
 
     //execute the agregation
+    //return this way [{_id:true,count:2},{_id:false,count:1}]
     const countContingencies = await this.contingencyModel.aggregate(
       aggregatorOpts,
     );
+
     //start the count in 0
     let totalContingencies = 0;
+    let half_days = false;
+    const days = [];
     //start adding depending on half day or not
+    //_id referes to half_day
     countContingencies.forEach((el) => {
       if (el._id === false) {
         //complete day
@@ -225,32 +272,20 @@ export class ContingenciesService {
       } else {
         //half day
         totalContingencies = totalContingencies + el.count * 0.5;
+        half_days = true;
       }
+      days.push(...el.days);
     });
 
-    if (operation === 'create') {
-      if (totalContingencies >= 2.5 && !half_day)
-        throw new BadRequestException(
-          'You have no more avaliables contingency days (complete days)',
-        );
-
-      if (
-        (totalContingencies >= 3 && half_day) ||
-        (totalContingencies >= 3 && !half_day)
-      )
-        throw new BadRequestException(
-          'You have no more avaliables contingency days (complete and half days)',
-        );
-    } else {
-      if (totalContingencies >= 2.5 && !half_day)
-        throw new BadRequestException(
-          'You have no more avaliables complete contingecy days',
-        );
-    }
+    return {
+      totalContingencies,
+      days,
+      half_days,
+    };
   }
 
   //validate contingecy is not a weekend day
-  validateWeekDay(date: string) {
+  validateWeekEndDay(date: string) {
     //get the number of weekday
     const weekday = DateTime.fromISO(date).weekday;
     //validate that day is not part of the weekend
