@@ -13,8 +13,8 @@ import {
 import { CommonService } from '../common/common.service';
 import { status } from 'src/common/interfaces/status.interface';
 import { DateTime } from 'luxon';
-import { UserInformation } from 'src/users/interfaces';
 import { PaginationDto } from '../common/dto/pagination.dto';
+import * as mockData from '../users/mock-data/mock-users.json';
 
 @Injectable()
 export class ContingenciesService {
@@ -30,18 +30,28 @@ export class ContingenciesService {
   ) {}
 
   async create(
+    employee_id: number,
     createContingencyDto: CreateContingencyDto,
-    user: UserInformation,
+    employee_name?: string,
   ) {
     try {
+      //get the information of user depends on type of request (tm-request or employee request)
+      let name;
+      if (!employee_name) {
+        const employee = mockData.users.find((user) => user.id === employee_id);
+        name = employee.name;
+      } else {
+        name = employee_name;
+      }
+
       /*--------------------------- Validations ----------------------------------* */
       //validate that day is not part of the weekend
       this.validateWeekEndDay(String(createContingencyDto.date));
       // validate day is not already taken
-      await this.valitateDay(user.id, createContingencyDto.date);
+      await this.valitateDay(employee_id, createContingencyDto.date);
       // validate user has no more than 3 days
       await this.valitateNumberOfDays(
-        user.id,
+        employee_id,
         createContingencyDto.half_day,
         'create',
       );
@@ -56,8 +66,8 @@ export class ContingenciesService {
       //create contingency
       const contigency = await this.contingencyModel.create<Contingency>({
         folio: folio,
-        id_employee: user.id,
-        name_employee: user.name,
+        id_employee: employee_id,
+        name_employee: name,
         ...createContingencyDto,
       });
 
@@ -68,13 +78,13 @@ export class ContingenciesService {
     }
   }
 
-  async findAll(user: UserInformation, paginationDto: PaginationDto) {
+  async findAll(id_employee: number, paginationDto: PaginationDto) {
     const options = { page: paginationDto.page, limit: 5 };
-    const query = { id_employee: user.id };
+    const query = { id_employee: id_employee };
 
     //get days and numbers of days taken
     const { totalContingencies, days } = await this.getNumerOfDaysAndDaysTaken(
-      user.id,
+      id_employee,
     );
 
     const contingencies = await this.contingencyModelPag.paginate(
@@ -95,8 +105,11 @@ export class ContingenciesService {
     return this.contingencyModelPag.paginate(query, options);
   }
 
-  async findOne(id: string) {
-    const contingency = await this.contingencyModel.findOne({ _id: id });
+  async findOne(id: string, id_employee: number) {
+    const contingency = await this.contingencyModel.findOne({
+      _id: id,
+      id_employee,
+    });
     //return exception in case contingency is not found
     if (!contingency)
       throw new BadRequestException('Contingency was not found');
@@ -106,24 +119,25 @@ export class ContingenciesService {
   async update(
     id: string,
     updateContingencyDto: UpdateContingencyDto,
-    user: UserInformation,
+    employee_id: number,
   ) {
     try {
       /*--------------------------- Validations ----------------------------------* */
       //validate that day is not part of the weekend
       this.validateWeekEndDay(String(updateContingencyDto.date));
       // validate day is not already taken
-      await this.valitateDay(user.id, updateContingencyDto.date, id);
+      await this.valitateDay(employee_id, updateContingencyDto.date, id);
       // validate user has no more than 3 days
       await this.valitateNumberOfDays(
-        user.id,
+        employee_id,
         updateContingencyDto.half_day,
         'update',
       );
+
       /*----------------------------------------------------------------------------* */
       //find and update the document
       const contingencyUpdated = await this.contingencyModel.findOneAndUpdate(
-        { _id: id },
+        { _id: id, employee_id: employee_id },
         { ...updateContingencyDto, status: 'pending' },
         { new: true },
       );
@@ -137,15 +151,18 @@ export class ContingenciesService {
     }
   }
 
-  async remove(id: string) {
-    //find and delete the document
-    const contingencyDeleted = await this.contingencyModel.findOneAndDelete({
+  async remove(id: string, id_employee: number) {
+    //find the documents
+    const contingency = await this.findOne(id, id_employee);
+    //change the status to canceled if status is already approved
+    if (contingency.status === 'approved') {
+      return this.updateStatus(id, { status: 'canceled' });
+    }
+    //delete document in case anyother status
+    return contingency.deleteOne({
       _id: id,
+      id_employee: id_employee,
     });
-    //return exception in case contingency is not found
-    if (!contingencyDeleted)
-      throw new BadRequestException('Contingency is not valid');
-    return contingencyDeleted;
   }
 
   async updateStatus(
@@ -207,7 +224,7 @@ export class ContingenciesService {
     if (operation === 'create') {
       if (totalContingencies >= 2.5 && !half_day)
         throw new BadRequestException(
-          'You have no more avaliables contingency days (complete days)',
+          'No more avaliables contingency days (complete days)',
         );
 
       if (
@@ -215,12 +232,12 @@ export class ContingenciesService {
         (totalContingencies >= 3 && !half_day)
       )
         throw new BadRequestException(
-          'You have no more avaliables contingency days (complete and half days)',
+          'No more avaliables contingency days (complete and half days)',
         );
     } else {
       if (totalContingencies === 3 && !half_day && half_days)
         throw new BadRequestException(
-          'You have no more avaliables complete contingecy days',
+          'No more avaliables complete contingecy days',
         );
     }
   }
