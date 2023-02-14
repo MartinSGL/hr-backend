@@ -1,9 +1,24 @@
-import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { ParseMongoIdPipe } from 'src/common/pipe/parse-mongo-id.pipe';
-import { Auth } from '../users/decorator';
+import { UserInformation } from 'src/users/interfaces';
+import { Auth, GetUser } from '../users/decorator';
 import { ContingenciesService } from './contingencies.service';
-import { UpdateStatusContingencyDto } from './dto';
+import {
+  CreateContingencyDto,
+  UpdateContingencyDto,
+  UpdateStatusContingencyDto,
+} from './dto';
 
 @Controller('contingencies-tm')
 export class ContingenciesControllerTM {
@@ -25,5 +40,43 @@ export class ContingenciesControllerTM {
       id,
       updateStatusContingencyDto,
     );
+  }
+
+  @Get(':id_employee')
+  @Auth('admin') // only users with role 'admin' can use this
+  fillAllContingenciesByEmployee(
+    @Param('id_employee', ParseIntPipe) id_employee: number,
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return this.contingenciesService.findAll(id_employee, paginationDto);
+  }
+
+  @Post(':id_employee')
+  create(
+    @Body() createContingencyDto: CreateContingencyDto,
+    @Param('id_employee', ParseIntPipe) id_employee: number,
+  ) {
+    return this.contingenciesService.create(id_employee, createContingencyDto);
+  }
+
+  @Patch(':id_employee/:id')
+  update(
+    @Param('id_employee', ParseIntPipe) id_employee: number,
+    @Param('id', ParseMongoIdPipe) id: string,
+    @Body() updateContingencyDto: UpdateContingencyDto,
+  ) {
+    return this.contingenciesService.update(
+      id,
+      updateContingencyDto,
+      id_employee,
+    );
+  }
+
+  @Delete(':id_employee/:id')
+  remove(
+    @Param('id_employee', ParseIntPipe) id_employee: number,
+    @Param('id', ParseMongoIdPipe) id: string,
+  ) {
+    return this.contingenciesService.remove(id, id_employee);
   }
 }

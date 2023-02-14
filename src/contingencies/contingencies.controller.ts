@@ -26,7 +26,11 @@ export class ContingenciesController {
     @Body() createContingencyDto: CreateContingencyDto,
     @GetUser() user: UserInformation,
   ) {
-    return this.contingenciesService.create(createContingencyDto, user);
+    return this.contingenciesService.create(
+      user.id,
+      createContingencyDto,
+      user.name,
+    );
   }
 
   @Get()
@@ -34,12 +38,15 @@ export class ContingenciesController {
     @GetUser() user: UserInformation,
     @Query() paginationDto: PaginationDto,
   ) {
-    return this.contingenciesService.findAll(user, paginationDto);
+    return this.contingenciesService.findAll(user.id, paginationDto);
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseMongoIdPipe) id: string) {
-    return this.contingenciesService.findOne(id);
+  findOne(
+    @Param('id', ParseMongoIdPipe) id: string,
+    @GetUser() user: UserInformation,
+  ) {
+    return this.contingenciesService.findOne(id, user.id);
   }
 
   @Patch(':id')
@@ -48,11 +55,11 @@ export class ContingenciesController {
     @Body() updateContingencyDto: UpdateContingencyDto,
     @GetUser() user: UserInformation,
   ) {
-    return this.contingenciesService.update(id, updateContingencyDto, user);
+    return this.contingenciesService.update(id, updateContingencyDto, user.id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.contingenciesService.remove(id);
+  remove(@Param('id') id: string, @GetUser() user: UserInformation) {
+    return this.contingenciesService.remove(id, user.id);
   }
 }
