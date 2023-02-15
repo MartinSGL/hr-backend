@@ -31,6 +31,9 @@ export class Contingency {
 
   @Prop({ required: true, default: 0 })
   id_tm?: number;
+
+  @Prop({ required: true })
+  createdBy: number;
 }
 
 export interface ContingencyDocument extends Contingency, Document {}

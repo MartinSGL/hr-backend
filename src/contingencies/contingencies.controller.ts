@@ -29,6 +29,7 @@ export class ContingenciesController {
     return this.contingenciesService.create(
       user.id,
       createContingencyDto,
+      user.id,
       user.name,
     );
   }

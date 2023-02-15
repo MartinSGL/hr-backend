@@ -32,6 +32,7 @@ export class ContingenciesService {
   async create(
     employee_id: number,
     createContingencyDto: CreateContingencyDto,
+    createdBy: number,
     employee_name?: string,
   ) {
     try {
@@ -69,6 +70,7 @@ export class ContingenciesService {
         id_employee: employee_id,
         name_employee: name,
         ...createContingencyDto,
+        createdBy,
       });
 
       return contigency;
@@ -79,7 +81,12 @@ export class ContingenciesService {
   }
 
   async findAll(id_employee: number, paginationDto: PaginationDto) {
-    const options = { page: paginationDto.page, limit: 5 };
+    const options = {
+      select: ['-__v', '-createdAt', '-updatedAt'],
+      sort: { _id: -1 },
+      page: paginationDto.page,
+      limit: 5,
+    };
     const query = { id_employee: id_employee };
 
     //get days and numbers of days taken
@@ -100,7 +107,12 @@ export class ContingenciesService {
   }
 
   async findAllByStatus(paginationDto: PaginationDto) {
-    const options = { page: paginationDto.page, limit: 5 };
+    const options = {
+      select: ['-__v', '-createdAt', '-updatedAt'],
+      sort: { _id: -1 },
+      page: paginationDto.page,
+      limit: 5,
+    };
     const query = { status: 'pending' };
     return this.contingencyModelPag.paginate(query, options);
   }
@@ -151,12 +163,12 @@ export class ContingenciesService {
     }
   }
 
-  async remove(id: string, id_employee: number) {
+  async remove(id: string, id_employee: number, id_tm = 0) {
     //find the documents
     const contingency = await this.findOne(id, id_employee);
     //change the status to canceled if status is already approved
     if (contingency.status === 'approved') {
-      return this.updateStatus(id, { status: 'canceled' });
+      return this.updateStatus(id, { status: 'canceled' }, id_tm);
     }
     //delete document in case anyother status
     return contingency.deleteOne({
@@ -168,6 +180,7 @@ export class ContingenciesService {
   async updateStatus(
     id: string,
     updateStatusContingencyDto: UpdateStatusContingencyDto,
+    id_tm: number,
   ) {
     //validate that if the status is rejected then the observations field must not be empty
     if (
@@ -180,7 +193,7 @@ export class ContingenciesService {
     //find the document, change the status and observations(only if request is rejected)
     const contingencyUpdated = await this.contingencyModel.findOneAndUpdate(
       { _id: id },
-      updateStatusContingencyDto,
+      { ...updateStatusContingencyDto, id_tm },
       { new: true },
     );
     if (!contingencyUpdated)

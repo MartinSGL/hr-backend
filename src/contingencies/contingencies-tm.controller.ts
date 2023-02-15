@@ -35,10 +35,12 @@ export class ContingenciesControllerTM {
   updateStatus(
     @Param('id', ParseMongoIdPipe) id: string,
     @Body() updateStatusContingencyDto: UpdateStatusContingencyDto,
+    @GetUser() user: UserInformation,
   ) {
     return this.contingenciesService.updateStatus(
       id,
       updateStatusContingencyDto,
+      user.id,
     );
   }
 
@@ -55,8 +57,13 @@ export class ContingenciesControllerTM {
   create(
     @Body() createContingencyDto: CreateContingencyDto,
     @Param('id_employee', ParseIntPipe) id_employee: number,
+    @GetUser() user: UserInformation,
   ) {
-    return this.contingenciesService.create(id_employee, createContingencyDto);
+    return this.contingenciesService.create(
+      id_employee,
+      createContingencyDto,
+      user.id,
+    );
   }
 
   @Patch(':id_employee/:id')
@@ -76,7 +83,8 @@ export class ContingenciesControllerTM {
   remove(
     @Param('id_employee', ParseIntPipe) id_employee: number,
     @Param('id', ParseMongoIdPipe) id: string,
+    @GetUser() user: UserInformation,
   ) {
-    return this.contingenciesService.remove(id, id_employee);
+    return this.contingenciesService.remove(id, id_employee, user.id);
   }
 }
