@@ -73,7 +73,7 @@ export class ContingenciesService {
         createdBy,
       });
 
-      return contigency;
+      return { folio: contigency.folio };
     } catch (error: any) {
       //global function to handdle the error
       this.commonService.handleError(error);
@@ -82,7 +82,7 @@ export class ContingenciesService {
 
   async findAll(id_employee: number, paginationDto: PaginationDto) {
     const options = {
-      select: ['-__v', '-createdAt', '-updatedAt'],
+      select: ['-__v', '-createdAt', '-updatedAt', '-id_tm', '-createdBy'],
       sort: { _id: -1 },
       page: paginationDto.page,
       limit: 5,
@@ -108,7 +108,7 @@ export class ContingenciesService {
 
   async findAllByStatus(paginationDto: PaginationDto) {
     const options = {
-      select: ['-__v', '-createdAt', '-updatedAt'],
+      select: ['-__v', '-createdAt', '-updatedAt', '-id_tm', '-createdBy'],
       sort: { _id: -1 },
       page: paginationDto.page,
       limit: 5,
@@ -156,7 +156,7 @@ export class ContingenciesService {
       //return exception in case contingency is not found
       if (!contingencyUpdated)
         throw new BadRequestException('Contingency is not valid');
-      return contingencyUpdated;
+      return { folio: contingencyUpdated.folio };
     } catch (error: any) {
       //global function to handdle the error
       this.commonService.handleError(error);
@@ -171,10 +171,12 @@ export class ContingenciesService {
       return this.updateStatus(id, { status: 'canceled' }, id_tm);
     }
     //delete document in case anyother status
-    return contingency.deleteOne({
+    const contingencyDeleted = await contingency.deleteOne({
       _id: id,
       id_employee: id_employee,
     });
+
+    return { folio: contingencyDeleted.folio };
   }
 
   async updateStatus(
@@ -198,7 +200,7 @@ export class ContingenciesService {
     );
     if (!contingencyUpdated)
       throw new BadRequestException('Contingency was not found');
-    return contingencyUpdated;
+    return { folio: contingencyUpdated.folio };
   }
 
   //valdiate that the day requested is not already taken

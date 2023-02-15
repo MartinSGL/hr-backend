@@ -42,14 +42,6 @@ export class ContingenciesController {
     return this.contingenciesService.findAll(user.id, paginationDto);
   }
 
-  @Get(':id')
-  findOne(
-    @Param('id', ParseMongoIdPipe) id: string,
-    @GetUser() user: UserInformation,
-  ) {
-    return this.contingenciesService.findOne(id, user.id);
-  }
-
   @Patch(':id')
   update(
     @Param('id', ParseMongoIdPipe) id: string,

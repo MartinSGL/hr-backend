@@ -54,6 +54,7 @@ export class ContingenciesControllerTM {
   }
 
   @Post(':id_employee')
+  @Auth('admin') // only users with role 'admin' can use this
   create(
     @Body() createContingencyDto: CreateContingencyDto,
     @Param('id_employee', ParseIntPipe) id_employee: number,
@@ -67,6 +68,7 @@ export class ContingenciesControllerTM {
   }
 
   @Patch(':id_employee/:id')
+  @Auth('admin') // only users with role 'admin' can use this
   update(
     @Param('id_employee', ParseIntPipe) id_employee: number,
     @Param('id', ParseMongoIdPipe) id: string,
@@ -80,6 +82,7 @@ export class ContingenciesControllerTM {
   }
 
   @Delete(':id_employee/:id')
+  @Auth('admin') // only users with role 'admin' can use this
   remove(
     @Param('id_employee', ParseIntPipe) id_employee: number,
     @Param('id', ParseMongoIdPipe) id: string,
