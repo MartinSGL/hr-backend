@@ -11,8 +11,10 @@ export const GetUser = createParamDecorator(
     const req = ctx.switchToHttp().getRequest();
     const user = req.user;
 
-    if (!user)
-      throw new InternalServerErrorException('User not found (request)');
+    if (!user) {
+      console.log('check if route has decorator @Auth()');
+      throw new InternalServerErrorException('User not found');
+    }
     //if they sent params decorator will return only data requestes if not all user info
     //example @GetUser('name') only retrieve the name
     //@GetUser() retrieve all the data
