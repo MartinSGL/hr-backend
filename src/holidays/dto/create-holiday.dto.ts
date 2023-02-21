@@ -6,7 +6,4 @@ export class CreateHolidayDto {
 
   @IsDateString()
   date: Date;
-
-  @IsNotEmpty()
-  image: string;
 }

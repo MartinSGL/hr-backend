@@ -1,9 +1,10 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SenioritiesService } from 'src/seniorities/seniorities.service';
-import { superRoles, SuperRoles } from 'src/users/interfaces/rolesInterface';
+import { superRoles } from 'src/users/interfaces/rolesInterface';
 import { UsersService } from '../users/users.service';
-import { seniority_information } from './data/seniority-information';
+import { HolidaysService } from '../holidays/holidays.service';
+import { seniority_information, holidays_information } from './data';
 
 @Injectable()
 export class SeedsService {
@@ -13,6 +14,7 @@ export class SeedsService {
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
     private readonly seniorityService: SenioritiesService,
+    private readonly holidaysCatalogueSerivce: HolidaysService,
   ) {}
   async executeSeeders(password: string) {
     const seed_password = this.configService.get<string>('SEED_PASSWORD');
@@ -21,10 +23,12 @@ export class SeedsService {
     }
     const adminInfo = await this.setAdminInfo();
     const seniorityInfo = await this.setSeniorityInfo();
+    const holidaysInfo = await this.setHolidaysCatalogue();
 
     return {
       adminInfo,
       seniorityInfo,
+      holidaysInfo,
     };
   }
 
@@ -61,6 +65,17 @@ export class SeedsService {
     //insert data if info is not in db
     await this.seniorityService.create(this.seniorityInformation);
     //return information
+    return 'seed executed successfully';
+  }
+
+  async setHolidaysCatalogue() {
+    const holidaysCatalogue =
+      await this.holidaysCatalogueSerivce.findAllCatalogue();
+    if (holidaysCatalogue.length > 0) {
+      return 'Data already exist, therefore seed can not be executed';
+    }
+
+    await this.holidaysCatalogueSerivce.fillCatalogue(holidays_information);
     return 'seed executed successfully';
   }
 }

@@ -1,4 +1,6 @@
-import { Schema, Prop } from '@nestjs/mongoose';
+import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
+
+//current holidays
 @Schema({ timestamps: true })
 export class Holiday {
   @Prop({ required: true, unique: true })
@@ -7,9 +9,27 @@ export class Holiday {
   @Prop({ required: true, unique: true })
   date: Date;
 
-  @Prop({ default: 'no image' })
-  image: string;
+  @Prop({ default: 'mexico' })
+  country?: string;
 
   @Prop({ required: true })
   id_tm: number;
 }
+
+export const HolidaySchema = SchemaFactory.createForClass(Holiday);
+
+//holidays avaliables to select
+@Schema({ timestamps: true })
+export class HolidayCatalogue {
+  @Prop({ required: true, unique: true })
+  name: string;
+
+  @Prop({ default: 'mexico' })
+  country?: string;
+
+  @Prop({ required: true })
+  id_tm: number;
+}
+
+export const HolidayCatalogueSchema =
+  SchemaFactory.createForClass(HolidayCatalogue);

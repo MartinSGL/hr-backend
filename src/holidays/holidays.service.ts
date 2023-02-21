@@ -1,26 +1,85 @@
-import { Injectable } from '@nestjs/common';
-import { CreateHolidayDto } from './dto/create-holiday.dto';
-import { UpdateHolidayDto } from './dto/update-holiday.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { CommonService } from 'src/common/common.service';
+import { CreateCatalogueDto, UpdateCatalogueDto } from './dto';
+import { HolidayCatalogue } from './entities/holiday.entity';
 
 @Injectable()
 export class HolidaysService {
-  create(createHolidayDto: CreateHolidayDto) {
-    return 'This action adds a new holiday';
+  constructor(
+    //catalogue of holidays service
+    @InjectModel(HolidayCatalogue.name)
+    private readonly holidayCatalogueModel: Model<HolidayCatalogue>,
+    //generic services needed in contingency services (generateFolio, etc)
+    private readonly commonService: CommonService,
+  ) {}
+  async createCatalogue(createCatalogueDto: CreateCatalogueDto, id_tm: number) {
+    try {
+      createCatalogueDto.name = createCatalogueDto.name.toLowerCase();
+      const holidayCatalogue =
+        await this.holidayCatalogueModel.create<HolidayCatalogue>({
+          ...createCatalogueDto,
+          id_tm,
+        });
+
+      return holidayCatalogue;
+    } catch (error) {
+      //global function to handdle the error
+      this.commonService.handleError(error);
+    }
   }
 
-  findAll() {
-    return `This action returns all holidays`;
+  findAllCatalogue() {
+    return this.holidayCatalogueModel.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} holiday`;
+  async updateCatalogue(
+    id: string,
+    updateCatalogueDto: UpdateCatalogueDto,
+    id_tm: number,
+  ) {
+    try {
+      updateCatalogueDto.name = updateCatalogueDto.name.toLowerCase();
+      const holidayCatalogue =
+        await this.holidayCatalogueModel.findOneAndUpdate(
+          { _id: id },
+          { ...updateCatalogueDto, id_tm },
+          { new: true },
+        );
+      if (!holidayCatalogue)
+        throw new BadRequestException('Holiday was not found');
+      return holidayCatalogue;
+    } catch (error) {
+      //global function to handdle the error
+      this.commonService.handleError(error);
+    }
   }
 
-  update(id: number, updateHolidayDto: UpdateHolidayDto) {
-    return `This action updates a #${id} holiday`;
+  async deleteCatalogue(id: string) {
+    const holidayCatalogue = await this.holidayCatalogueModel.findOneAndDelete({
+      _id: id,
+    });
+    if (!holidayCatalogue)
+      throw new BadRequestException('Holiday was not found');
+    return holidayCatalogue;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} holiday`;
+  async fillCatalogue(holidays: HolidayCatalogue[]) {
+    try {
+      const lowerCaseHolidays = holidays.map((holiday) => {
+        const name = holiday.name.toLowerCase();
+        return { ...holiday, name };
+      });
+
+      const resp = await this.holidayCatalogueModel.insertMany(
+        lowerCaseHolidays,
+      );
+
+      return resp;
+    } catch (error) {
+      //global function to handdle the error
+      this.commonService.handleError(error);
+    }
   }
 }
