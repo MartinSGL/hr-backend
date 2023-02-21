@@ -4,10 +4,11 @@ import { SeedsController } from './seeds.controller';
 import { UsersModule } from 'src/users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { SenioritiesModule } from 'src/seniorities/seniorities.module';
+import { HolidaysModule } from 'src/holidays/holidays.module';
 
 @Module({
   controllers: [SeedsController],
   providers: [SeedsService],
-  imports: [ConfigModule, UsersModule, SenioritiesModule],
+  imports: [ConfigModule, UsersModule, SenioritiesModule, HolidaysModule],
 })
 export class SeedModule {}

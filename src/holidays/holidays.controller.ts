@@ -1,34 +1,54 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+import { ParseMongoIdPipe } from 'src/common/pipe/parse-mongo-id.pipe';
+import { Auth, GetUser } from 'src/users/decorator';
+import { UserInformation } from 'src/users/interfaces';
+import { CreateCatalogueDto, UpdateCatalogueDto } from './dto';
 import { HolidaysService } from './holidays.service';
-import { CreateHolidayDto } from './dto/create-holiday.dto';
-import { UpdateHolidayDto } from './dto/update-holiday.dto';
 
 @Controller('holidays')
 export class HolidaysController {
   constructor(private readonly holidaysService: HolidaysService) {}
 
-  @Post()
-  create(@Body() createHolidayDto: CreateHolidayDto) {
-    return this.holidaysService.create(createHolidayDto);
+  @Post('catalogue')
+  @Auth('admin')
+  createCatalogue(
+    @Body() createCatalogueDto: CreateCatalogueDto,
+    @GetUser() user: UserInformation,
+  ) {
+    return this.holidaysService.createCatalogue(createCatalogueDto, user.id);
   }
 
-  @Get()
-  findAll() {
-    return this.holidaysService.findAll();
+  @Get('catalogue')
+  @Auth('admin')
+  findAllCatalogue() {
+    return this.holidaysService.findAllCatalogue();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.holidaysService.findOne(+id);
+  @Patch('catalogue/:id')
+  @Auth('admin')
+  updateCatalogue(
+    @Param('id', ParseMongoIdPipe) id: string,
+    @Body() updateCatalogueDto: UpdateCatalogueDto,
+    @GetUser() user: UserInformation,
+  ) {
+    return this.holidaysService.updateCatalogue(
+      id,
+      updateCatalogueDto,
+      user.id,
+    );
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateHolidayDto: UpdateHolidayDto) {
-    return this.holidaysService.update(+id, updateHolidayDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.holidaysService.remove(+id);
+  @Delete('catalogue/:id')
+  @Auth('admin')
+  deleteCatalogue(@Param('id', ParseMongoIdPipe) id: string) {
+    return this.holidaysService.deleteCatalogue(id);
   }
 }
