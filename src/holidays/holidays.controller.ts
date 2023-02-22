@@ -10,7 +10,11 @@ import {
 import { ParseMongoIdPipe } from 'src/common/pipe/parse-mongo-id.pipe';
 import { Auth, GetUser } from 'src/users/decorator';
 import { UserInformation } from 'src/users/interfaces';
-import { CreateCatalogueDto, UpdateCatalogueDto } from './dto';
+import {
+  CreateCatalogueDto,
+  CreateHolidayDto,
+  UpdateCatalogueDto,
+} from './dto';
 import { HolidaysService } from './holidays.service';
 
 @Controller('holidays')
@@ -51,4 +55,12 @@ export class HolidaysController {
   deleteCatalogue(@Param('id', ParseMongoIdPipe) id: string) {
     return this.holidaysService.deleteCatalogue(id);
   }
+
+  // @Post('current')
+  // addHolidays(
+  //   @Body() createHolidayDto: CreateHolidayDto,
+  //   @GetUser() user: UserInformation,
+  // ) {
+  //   return this.holidaysService.addHolidays(createHolidayDto, user.id);
+  // }
 }

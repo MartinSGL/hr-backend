@@ -1,24 +1,26 @@
+import mongoose, { Model } from 'mongoose';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { CommonService } from 'src/common/common.service';
 import { CreateCatalogueDto, UpdateCatalogueDto } from './dto';
-import { HolidayCatalogue } from './entities/holiday.entity';
+import { CatalogueHoliday } from './entities/holiday.entity';
 
 @Injectable()
 export class HolidaysService {
   constructor(
     //catalogue of holidays service
-    @InjectModel(HolidayCatalogue.name)
-    private readonly holidayCatalogueModel: Model<HolidayCatalogue>,
+    @InjectModel(CatalogueHoliday.name)
+    private readonly holidayCatalogueModel: Model<CatalogueHoliday>,
     //generic services needed in contingency services (generateFolio, etc)
     private readonly commonService: CommonService,
+    @InjectConnection()
+    private readonly connection: mongoose.Connection,
   ) {}
   async createCatalogue(createCatalogueDto: CreateCatalogueDto, id_tm: number) {
     try {
       createCatalogueDto.name = createCatalogueDto.name.toLowerCase();
       const holidayCatalogue =
-        await this.holidayCatalogueModel.create<HolidayCatalogue>({
+        await this.holidayCatalogueModel.create<CatalogueHoliday>({
           ...createCatalogueDto,
           id_tm,
         });
@@ -65,21 +67,37 @@ export class HolidaysService {
     return holidayCatalogue;
   }
 
-  async fillCatalogue(holidays: HolidayCatalogue[]) {
+  async fillCatalogue(holidays: CatalogueHoliday[]) {
     try {
+      //turn the holidays' name into lowercase
       const lowerCaseHolidays = holidays.map((holiday) => {
         const name = holiday.name.toLowerCase();
         return { ...holiday, name };
       });
 
-      const resp = await this.holidayCatalogueModel.insertMany(
-        lowerCaseHolidays,
-      );
+      const session = await this.connection.startSession();
+      //This query was made using transactions to be
+      //sure that all documents is going to be inserted or none of them
+      const res = await session.withTransaction(async () => {
+        const holidays = await this.holidayCatalogueModel.insertMany(
+          lowerCaseHolidays,
+          {
+            session,
+          },
+        );
 
-      return resp;
+        return holidays;
+      });
+
+      session.endSession();
+
+      return res;
     } catch (error) {
       //global function to handdle the error
       this.commonService.handleError(error);
     }
   }
+
+  /** services to add current holidays */
+  // async addHolidays(createHolidayDto: CreateHolidayDto, id_tm: number) {}
 }
