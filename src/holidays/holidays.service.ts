@@ -2,8 +2,12 @@ import mongoose, { Model } from 'mongoose';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { CommonService } from 'src/common/common.service';
-import { CreateCatalogueDto, UpdateCatalogueDto } from './dto';
-import { CatalogueHoliday } from './entities/holiday.entity';
+import {
+  CreateCatalogueDto,
+  CreateHolidayDto,
+  UpdateCatalogueDto,
+} from './dto';
+import { CatalogueHoliday, Holiday } from './entities/holiday.entity';
 
 @Injectable()
 export class HolidaysService {
@@ -11,6 +15,9 @@ export class HolidaysService {
     //catalogue of holidays service
     @InjectModel(CatalogueHoliday.name)
     private readonly holidayCatalogueModel: Model<CatalogueHoliday>,
+    //current holidays of year
+    @InjectModel(Holiday.name)
+    private readonly holidayModel: Model<Holiday>,
     //generic services needed in contingency services (generateFolio, etc)
     private readonly commonService: CommonService,
     @InjectConnection()
@@ -58,12 +65,14 @@ export class HolidaysService {
     }
   }
 
-  async deleteCatalogue(id: string) {
-    const holidayCatalogue = await this.holidayCatalogueModel.findOneAndDelete({
+  async updateCatalogueStatus(id: string) {
+    const holidayCatalogue = await this.holidayCatalogueModel.findOne({
       _id: id,
     });
     if (!holidayCatalogue)
       throw new BadRequestException('Holiday was not found');
+    holidayCatalogue.isActive = !holidayCatalogue.isActive;
+    holidayCatalogue.save();
     return holidayCatalogue;
   }
 
@@ -76,6 +85,7 @@ export class HolidaysService {
       });
 
       const session = await this.connection.startSession();
+
       //This query was made using transactions to be
       //sure that all documents is going to be inserted or none of them
       const res = await session.withTransaction(async () => {
@@ -99,5 +109,67 @@ export class HolidaysService {
   }
 
   /** services to add current holidays */
-  // async addHolidays(createHolidayDto: CreateHolidayDto, id_tm: number) {}
+  async addHolidays(
+    holidaysArr: { holidays: CreateHolidayDto[] },
+    year: number,
+    id_tm: number,
+  ) {
+    try {
+      const dataToInsert = holidaysArr.holidays.map((holiday) => {
+        return { ...holiday, id_tm };
+      });
+
+      //start transactions to delete and reinsert
+      const session = await this.connection.startSession();
+      await session.withTransaction(async () => {
+        await this.holidayModel.deleteMany(
+          {
+            date: {
+              $gte: `${year}-01-01`,
+              $lte: `${year + 1}-01-01`,
+            },
+          },
+          {
+            session,
+          },
+        );
+
+        await this.holidayModel.insertMany(dataToInsert, { session });
+      });
+
+      session.endSession();
+
+      return 'holidays has been capture successfuly';
+    } catch (error) {
+      //global function to handdle the error
+      this.commonService.handleError(error);
+    }
+  }
+
+  findAll(year: number) {
+    const first_day_of_year = new Date(`${year}-01-01`);
+    const first_day_of_next_year = new Date(`${year + 1}-01-01`);
+
+    const aggregatorOpts = [
+      {
+        $match: {
+          date: { $gte: first_day_of_year, $lt: first_day_of_next_year },
+        },
+      },
+      {
+        $lookup: {
+          from: 'catalogueholidays',
+          localField: 'id_holiday',
+          foreignField: '_id',
+          as: 'holidays',
+        },
+      },
+      {
+        $project: { _id: 1, date: 1, 'holidays.name': 1 },
+      },
+    ];
+
+    return this.holidayModel.aggregate(aggregatorOpts);
+    // return this.holidayModel.aggregate(aggregatorOpts);
+  }
 }

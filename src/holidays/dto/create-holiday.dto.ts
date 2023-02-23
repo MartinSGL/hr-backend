@@ -4,11 +4,11 @@ import { Types } from 'mongoose';
 import { ParseMongoIdPipe } from 'src/common/pipe/parse-mongo-id.pipe';
 
 export class CreateHolidayDto {
+  @IsDateString()
+  date: Date;
+
   @IsNotEmpty()
   @Type(() => Types.ObjectId)
   @Transform(() => ParseMongoIdPipe)
   id_holiday: Types.ObjectId;
-
-  @IsDateString()
-  date: Date;
 }

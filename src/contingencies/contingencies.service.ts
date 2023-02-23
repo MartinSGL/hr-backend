@@ -271,7 +271,7 @@ export class ContingenciesService {
           id_employee,
           date: {
             $gte: first_day,
-            $lte: last_day,
+            $lt: last_day,
           },
           status: { $ne: 'canceled' },
         },

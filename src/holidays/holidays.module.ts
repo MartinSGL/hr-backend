@@ -5,6 +5,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   CatalogueHoliday,
   CatalogueHolidaySchema,
+  Holiday,
+  HolidaySchema,
 } from './entities/holiday.entity';
 import { UsersModule } from 'src/users/users.module';
 import { CommonModule } from 'src/common/common.module';
@@ -18,6 +20,10 @@ import { CommonModule } from 'src/common/common.module';
       {
         name: CatalogueHoliday.name,
         schema: CatalogueHolidaySchema,
+      },
+      {
+        name: Holiday.name,
+        schema: HolidaySchema,
       },
     ]),
     UsersModule,

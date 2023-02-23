@@ -24,24 +24,26 @@ export class CommonService {
       .findOne({
         createdAt: {
           $gte: today,
-          $lte: tomorrow,
+          $lt: tomorrow,
         },
       })
       .sort({ createdAt: -1 });
 
     //get params of date for folio
     const { year, month, day } = DateTime.now();
+    //format numbers in order to always get 2 digits
+    const format_month = month > 9 ? month : `0${month}`;
+    const format_day = day > 9 ? day : `0${day}`;
+    const format_year = year.toString().substring(2, 4);
     //if there is no documents start with 01
-    if (!last_document) return `${type}-${year}${month}${day}-01`;
+    if (!last_document)
+      return `${type}-${format_year}${format_month}${format_day}-01`;
     //get the number from folio - 01
     const last_number = last_document.folio.split('-')[2];
     //turn the string into number and add 1
     const new_number = +last_number + 1;
     //format numbers in order to always get 2 digits
-    const format_year = year.toString().substring(2, 4);
     const format_number = new_number > 9 ? new_number : `0${new_number}`;
-    const format_month = month > 9 ? month : `0${month}`;
-    const format_day = day > 9 ? day : `0${day}`;
     //generate the new folio and return it VAC-230123-01
     //VAC = type of request
     //230123 = 2023 January 23

@@ -1,20 +1,14 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import mongoose from 'mongoose';
+import { Schema as MongooseSchema } from 'mongoose';
 
 //current holidays
 @Schema({ timestamps: true })
 export class Holiday {
-  @Prop({
-    type: {
-      required: true,
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'CatalogueHoliday',
-    },
-  })
-  id_holiday: string;
-
   @Prop({ required: true, unique: true })
   date: Date;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Person' })
+  id_holiday: string;
 
   @Prop({ required: true })
   id_tm: number;
@@ -30,6 +24,9 @@ export class CatalogueHoliday {
 
   @Prop({ default: 'mexico' })
   country?: string;
+
+  @Prop({ default: true })
+  isActive?: boolean;
 
   @Prop({ required: true })
   id_tm: number;
