@@ -6,11 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ParseMongoIdPipe } from 'src/common/pipe/parse-mongo-id.pipe';
 import { Auth, GetUser } from 'src/users/decorator';
 import { UserInformation } from 'src/users/interfaces';
-import { CreateCatalogueDto, UpdateCatalogueDto } from './dto';
+import {
+  CreateCatalogueDto,
+  CreateHolidayDto,
+  UpdateCatalogueDto,
+} from './dto';
 import { HolidaysService } from './holidays.service';
 
 @Controller('holidays')
@@ -48,7 +53,23 @@ export class HolidaysController {
 
   @Delete('catalogue/:id')
   @Auth('admin')
-  deleteCatalogue(@Param('id', ParseMongoIdPipe) id: string) {
-    return this.holidaysService.deleteCatalogue(id);
+  updateCatalogueStatus(@Param('id', ParseMongoIdPipe) id: string) {
+    return this.holidaysService.updateCatalogueStatus(id);
+  }
+
+  @Post('current')
+  @Auth('admin')
+  addHolidays(
+    @Body() holidaysArr: { holidays: CreateHolidayDto[] },
+    @Body('year', ParseIntPipe) year: number,
+    @GetUser() user: UserInformation,
+  ) {
+    return this.holidaysService.addHolidays(holidaysArr, year, user.id);
+  }
+
+  @Get('current/:year')
+  @Auth()
+  findAll(@Param('year', ParseIntPipe) year: number) {
+    return this.holidaysService.findAll(year);
   }
 }

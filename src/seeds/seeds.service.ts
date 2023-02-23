@@ -5,6 +5,8 @@ import { superRoles } from 'src/users/interfaces/rolesInterface';
 import { UsersService } from '../users/users.service';
 import { HolidaysService } from '../holidays/holidays.service';
 import { seniority_information, holidays_information } from './data';
+import { InjectConnection } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class SeedsService {
@@ -15,8 +17,13 @@ export class SeedsService {
     private readonly configService: ConfigService,
     private readonly seniorityService: SenioritiesService,
     private readonly holidaysCatalogueSerivce: HolidaysService,
+    @InjectConnection()
+    private readonly connection: mongoose.Connection,
   ) {}
   async executeSeeders(password: string) {
+    //function to be sure that all constraints works before to insert that
+    //for instanse: unique fields
+    await this.connection.syncIndexes();
     const seed_password = this.configService.get<string>('SEED_PASSWORD');
     if (password !== seed_password) {
       throw new BadRequestException('incorrect password');

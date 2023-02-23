@@ -1,6 +1,6 @@
-import { HolidayCatalogue } from 'src/holidays/entities/holiday.entity';
+import { CatalogueHoliday } from 'src/holidays/entities/holiday.entity';
 
-export const holidays_information: HolidayCatalogue[] = [
+export const holidays_information: CatalogueHoliday[] = [
   { name: 'NEW YEAR', id_tm: 0 },
   { name: 'MEXICAN CONSTITUTION DAY', id_tm: 0 },
   { name: 'BENITO JUAREZ DAY', id_tm: 0 },

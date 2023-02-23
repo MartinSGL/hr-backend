@@ -3,8 +3,10 @@ import { HolidaysService } from './holidays.service';
 import { HolidaysController } from './holidays.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
-  HolidayCatalogue,
-  HolidayCatalogueSchema,
+  CatalogueHoliday,
+  CatalogueHolidaySchema,
+  Holiday,
+  HolidaySchema,
 } from './entities/holiday.entity';
 import { UsersModule } from 'src/users/users.module';
 import { CommonModule } from 'src/common/common.module';
@@ -16,8 +18,12 @@ import { CommonModule } from 'src/common/common.module';
     CommonModule,
     MongooseModule.forFeature([
       {
-        name: HolidayCatalogue.name,
-        schema: HolidayCatalogueSchema,
+        name: CatalogueHoliday.name,
+        schema: CatalogueHolidaySchema,
+      },
+      {
+        name: Holiday.name,
+        schema: HolidaySchema,
       },
     ]),
     UsersModule,
