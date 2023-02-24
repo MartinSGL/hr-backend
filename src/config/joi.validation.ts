@@ -1,5 +1,4 @@
 import * as Joi from 'joi';
-import { superRoles } from 'src/users/interfaces/rolesInterface';
 //validations for env variables
 // TODO:check which default value env variables will take if they are not specified
 // these values or app.config values

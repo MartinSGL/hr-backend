@@ -1,4 +1,5 @@
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import * as paginate from 'mongoose-paginate-v2';
 import { status, Status } from 'src/common/interfaces/status.interface';
 
 @Schema({ timestamps: true })
@@ -10,12 +11,12 @@ export class Vacation {
   id_employee: number;
 
   @Prop({ required: true })
-  init_date: Date;
+  name_employee: string;
 
   @Prop({ required: true })
-  final_date: Date;
+  days: Date[];
 
-  @Prop([Date])
+  @Prop({ default: [] })
   half_days?: Date[];
 
   @Prop({ required: true })
@@ -27,6 +28,13 @@ export class Vacation {
   @Prop({ default: '' })
   observations?: string;
 
+  @Prop({ required: true, default: 0 })
+  id_tm?: number;
+
   @Prop({ required: true })
-  id_tm: number;
+  createdBy: number;
 }
+
+export interface VacationDocument extends Vacation, Document {}
+export const VacationSchema = SchemaFactory.createForClass(Vacation);
+VacationSchema.plugin(paginate);

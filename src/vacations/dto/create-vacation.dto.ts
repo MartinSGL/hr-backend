@@ -1,26 +1,14 @@
-import {
-  IsBoolean,
-  IsDateString,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateVacationDto {
-  @IsDateString()
-  init_date: Date;
+  @IsArray()
+  dates: Date[];
 
-  @IsDateString()
-  final_date: Date;
-
-  @IsBoolean()
+  @IsArray()
   @IsOptional()
   half_days?: Date[];
 
   @IsNotEmpty()
   @IsString()
   client_evidence: string;
-
-  @IsOptional()
-  comments?: string;
 }

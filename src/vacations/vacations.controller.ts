@@ -10,14 +10,25 @@ import {
 import { VacationsService } from './vacations.service';
 import { CreateVacationDto } from './dto/create-vacation.dto';
 import { UpdateVacationDto } from './dto/update-vacation.dto';
+import { Auth, GetUser } from 'src/users/decorator';
+import { UserInformation } from 'src/users/interfaces';
 
 @Controller('vacations')
+@Auth()
 export class VacationsController {
   constructor(private readonly vacationsService: VacationsService) {}
 
   @Post()
-  create(@Body() createVacationDto: CreateVacationDto) {
-    return this.vacationsService.create(createVacationDto);
+  create(
+    @Body() createVacationDto: CreateVacationDto,
+    @GetUser() user: UserInformation,
+  ) {
+    return this.vacationsService.create(
+      user.id,
+      createVacationDto,
+      user.id,
+      user.name,
+    );
   }
 
   @Get()
