@@ -11,4 +11,4 @@ import { HolidaysModule } from 'src/holidays/holidays.module';
   providers: [SeedsService],
   imports: [ConfigModule, UsersModule, SenioritiesModule, HolidaysModule],
 })
-export class SeedModule {}
+export class SeedsModule {}
