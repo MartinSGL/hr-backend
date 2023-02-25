@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { EnvConfiguration } from './config/app.config';
 import { JoiValidationSchema } from './config/joi.validation';
 import { SenioritiesModule } from './seniorities/seniorities.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { SenioritiesModule } from './seniorities/seniorities.module';
     SeedsModule,
     UsersModule,
     SenioritiesModule,
+    FilesModule,
   ],
 })
 export class AppModule {}

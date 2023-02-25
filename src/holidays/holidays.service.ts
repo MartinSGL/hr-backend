@@ -43,6 +43,10 @@ export class HolidaysService {
     return this.holidayCatalogueModel.find();
   }
 
+  findAllAtiveCatalogue() {
+    return this.holidayCatalogueModel.find({ isActive: true });
+  }
+
   async updateCatalogue(
     id: string,
     updateCatalogueDto: UpdateCatalogueDto,
@@ -140,7 +144,7 @@ export class HolidaysService {
       session.endSession();
 
       return 'holidays has been capture successfuly';
-    } catch (error) {
+    } catch (error: any) {
       //global function to handdle the error
       this.commonService.handleError(error);
     }
