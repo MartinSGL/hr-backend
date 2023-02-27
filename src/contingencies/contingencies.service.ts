@@ -259,7 +259,7 @@ export class ContingenciesService {
 
   async getNumerOfDaysAndDaysTaken(id_employee: number) {
     //get the current day
-    //TODO: get rid of this hide dependency (DateTime)
+    //TODO: get rid of this hiden dependency (DateTime)
     const { year } = DateTime.now();
     const first_day = new Date(`${year}-01-01`);
     const last_day = new Date(`${year + 1}-01-01`);

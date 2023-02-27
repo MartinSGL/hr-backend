@@ -123,6 +123,13 @@ export class HolidaysService {
         return { ...holiday, id_tm };
       });
 
+      //TODO:
+      // 1.- validate dates are not weekends
+      // esta en servicios en contingency
+      // 2.- validate that dates match with the year given
+      // 3.- check transactions or validate that dates are not duplicated
+      // throw new BadRequestException('messsage')
+
       //start transactions to delete and reinsert
       const session = await this.connection.startSession();
       await session.withTransaction(async () => {
