@@ -37,6 +37,12 @@ export class HolidaysController {
     return this.holidaysService.findAllCatalogue();
   }
 
+  @Get('catalogue-active')
+  @Auth('admin')
+  findAllAtiveCatalogue() {
+    return this.holidaysService.findAllAtiveCatalogue();
+  }
+
   @Patch('catalogue/:id')
   @Auth('admin')
   updateCatalogue(

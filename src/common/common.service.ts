@@ -55,6 +55,7 @@ export class CommonService {
   handleError(error: any) {
     //console the error
     console.log(error);
+
     // error for violation to unique rule in entity
     if (error.code === 11000) {
       throw new BadRequestException(
