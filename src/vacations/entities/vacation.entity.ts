@@ -14,10 +14,13 @@ export class Vacation {
   name_employee: string;
 
   @Prop({ required: true })
-  days: Date[];
+  dates: Date[];
 
   @Prop({ default: [] })
   half_days?: Date[];
+
+  @Prop({ default: [] })
+  holidays?: Date[];
 
   @Prop({ required: true })
   client_evidence: string;

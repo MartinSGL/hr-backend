@@ -10,4 +10,8 @@ export const EnvConfiguration = () => ({
   jwt: process.env.JWT_SECRET,
   //seed password
   seed_password: process.env.SEED_PASSWORD,
+  //cloudinary
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
 });

@@ -8,4 +8,7 @@ export const JoiValidationSchema = Joi.object({
   EMAIL: Joi.string().email(),
   JWT_SECRET: Joi.string().min(1).required(),
   SEED_PASSWORD: Joi.string().required(),
+  CLOUD_NAME: Joi.string().required(),
+  API_KEY: Joi.string().required(),
+  API_SECRET: Joi.string().required(),
 });

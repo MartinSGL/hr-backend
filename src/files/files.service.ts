@@ -1,26 +1,37 @@
-import { Injectable } from '@nestjs/common';
-import { CreateFileDto } from './dto/create-file.dto';
-import { UpdateFileDto } from './dto/update-file.dto';
+import { Injectable, Inject } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { UploadApiErrorResponse, UploadApiResponse, v2 } from 'cloudinary';
+import { CommonService } from 'src/common/common.service';
+import toStream = require('buffer-to-stream');
+import { Cloudinary } from './files.provider';
 
 @Injectable()
 export class FilesService {
-  create(createFileDto: CreateFileDto) {
-    return 'This action adds a new file';
+  private v2: any;
+  constructor(
+    @Inject(Cloudinary)
+    private readonly cloudinary,
+    private readonly configService: ConfigService,
+    //generic services needed in contingency services (generateFolio, etc)
+    private readonly commonService: CommonService,
+  ) {
+    this.cloudinary.v2.config({
+      cloud_name: this.configService.get('cloud_name'),
+      api_key: this.configService.get('api_key'),
+      api_secret: this.configService.get('api_secret'),
+    });
+    this.v2 = cloudinary.v2;
   }
+  async uploadImage(
+    file: Express.Multer.File,
+  ): Promise<UploadApiResponse | UploadApiErrorResponse> {
+    return new Promise((resolve, reject) => {
+      const upload = v2.uploader.upload_stream((error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      });
 
-  findAll() {
-    return `This action returns all files`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} file`;
-  }
-
-  update(id: number, updateFileDto: UpdateFileDto) {
-    return `This action updates a #${id} file`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} file`;
+      toStream(file.buffer).pipe(upload);
+    });
   }
 }

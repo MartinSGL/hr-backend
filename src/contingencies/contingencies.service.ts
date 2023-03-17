@@ -25,7 +25,7 @@ export class ContingenciesService {
     //model used to easier the pagination using library mongoose-paginate-v2
     @InjectModel(Contingency.name)
     private readonly contingencyModelPag: PaginateModel<ContingencyDocument>,
-    //generic services needed in contingency services (generateFolio, etc)
+    //generic services needed in most of the modules (generateFolio, etc)
     private readonly commonService: CommonService,
   ) {}
 
