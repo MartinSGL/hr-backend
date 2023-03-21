@@ -8,8 +8,4 @@ export class CreateVacationDto {
   @IsArray()
   @IsOptional()
   half_days?: Date[];
-
-  @IsArray()
-  @IsOptional()
-  holidays?: Date[];
 }
