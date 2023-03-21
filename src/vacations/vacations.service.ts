@@ -6,6 +6,7 @@ import { CreateVacationDto } from './dto/create-vacation.dto';
 import { UpdateVacationDto } from './dto/update-vacation.dto';
 import { Vacation, VacationDocument } from './entities/vacation.entity';
 import * as mockData from '../users/mock-data/mock-users.json';
+import { FilesService } from '../files/files.service';
 
 @Injectable()
 export class VacationsService {
@@ -16,12 +17,15 @@ export class VacationsService {
     //model used to easier the pagination using library mongoose-paginate-v2
     @InjectModel(Vacation.name)
     private readonly vacationModelPag: PaginateModel<VacationDocument>,
-    //generic services needed in contingency services (generateFolio, etc)
+    //service to upload files
+    private readonly filesService: FilesService,
+    //generic services needed in most of the modules (generateFolio, etc)
     private readonly commonService: CommonService,
   ) {}
   async create(
     employee_id: number,
     createVacationDto: CreateVacationDto,
+    client_evidence: Express.Multer.File,
     createdBy: number,
     employee_name?: string,
   ) {
@@ -42,15 +46,20 @@ export class VacationsService {
         'VAC',
       );
 
+      const image_uploaded = await this.filesService.uploadImage(
+        client_evidence,
+      );
+
       const vacations = await this.vacationModel.create({
         folio: folio,
         id_employee: employee_id,
         name_employee: name,
         ...createVacationDto,
+        client_evidence: image_uploaded.secure_url,
         createdBy,
       });
 
-      return { folio: vacations.folio };
+      return vacations;
     } catch (error) {
       //global function to handdle the error
       this.commonService.handleError(error);

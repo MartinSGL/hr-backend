@@ -49,7 +49,8 @@ export class SeedsService {
       return 'email and role must exist';
     }
     // check if data is already in DB
-    const users = await this.usersService.findAll();
+    const users = await this.usersService.findAllTM();
+    console.log(users);
     if (users.length > 0) {
       return 'Data already exist, therefore seed can not be executed';
     }
