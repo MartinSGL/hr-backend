@@ -130,7 +130,7 @@ export class ContingenciesService {
   ) {
     try {
       /*--------------------------- Validations ----------------------------------* */
-      //validate that day is not part of the weekend
+      // validate that day is not part of the weekend
       this.validateWeekEndDay(String(updateContingencyDto.date));
       // validate day is not already taken
       await this.valitateDay(employee_id, updateContingencyDto.date, id);
@@ -161,7 +161,7 @@ export class ContingenciesService {
     if (contingency.status === 'approved') {
       return this.updateStatus(id, { status: 'canceled' }, id_tm);
     }
-    //delete document in case anyother status
+    //delete document in case another status
     const contingencyDeleted = await contingency.deleteOne({
       _id: id,
       id_employee: id_employee,
@@ -175,7 +175,7 @@ export class ContingenciesService {
     updateStatusContingencyDto: UpdateStatusContingencyDto,
     id_tm: number,
   ) {
-    //validate that if the status is rejected then the observations field must not be empty
+    // validate that if the status is rejected then the observations field must not be empty
     if (
       updateStatusContingencyDto.status === status.rejected &&
       !updateStatusContingencyDto.observations
@@ -183,7 +183,7 @@ export class ContingenciesService {
       throw new BadRequestException('Observations must not be empty');
     }
 
-    //find the document, change the status and observations(only if request is rejected)
+    // find the document, change the status and observations(only if request is rejected)
     const contingencyUpdated = await this.contingencyModel.findOneAndUpdate(
       { _id: id },
       { ...updateStatusContingencyDto, id_tm },
@@ -194,18 +194,18 @@ export class ContingenciesService {
     return { folio: contingencyUpdated.folio };
   }
 
-  //valdiate that the day requested is not already taken
+  // valdiate that the day requested is not already taken
   private async valitateDay(id_employee: number, date: Date, id?: string) {
     let contingency;
     if (!id) {
-      //create operation
+      // create operation
       contingency = await this.contingencyModel.findOne({
         id_employee,
         date,
         status: { $ne: 'canceled' },
       });
     } else {
-      //update operation
+      // update operation
       contingency = await this.contingencyModel.findOne({
         id_employee,
         date,
@@ -217,9 +217,9 @@ export class ContingenciesService {
     if (contingency) throw new BadRequestException('The date is already taken');
   }
 
-  //validate that employee has still avaliables days or halfdays
+  // validate that employee has still avaliables days or halfdays
   private async valitateNumberOfDays(id_employee: number) {
-    //half_days return true if employee has halfdays
+    // half_days return true if employee has halfdays
     const { totalContingencies } = await this.getNumerOfDaysAndDaysTaken(
       id_employee,
     );
@@ -229,13 +229,13 @@ export class ContingenciesService {
   }
 
   async getNumerOfDaysAndDaysTaken(id_employee: number) {
-    //get the current day
-    //TODO: get rid of this hiden dependency (DateTime)
+    // get the current day
+    // TODO: get rid of this hiden dependency (DateTime)
     const { year } = DateTime.now();
     const first_day = new Date(`${year}-01-01`);
     const last_day = new Date(`${year + 1}-01-01`);
 
-    //count documents of current day
+    //find documents of current year
     const contingencies = await this.contingencyModel.find({
       date: {
         $gte: first_day,
@@ -246,7 +246,7 @@ export class ContingenciesService {
     });
 
     const days = [];
-
+    //push dates within the array
     contingencies.forEach((el) => {
       days.push(el.date);
     });
@@ -257,11 +257,11 @@ export class ContingenciesService {
     };
   }
 
-  //validate contingecy is not a weekend day
+  // validate contingecy is not a weekend day
   validateWeekEndDay(date: string) {
-    //get the number of weekday
+    // get the number of weekday
     const weekday = DateTime.fromISO(date).weekday;
-    //validate that day is not part of the weekend
+    // validate that day is not part of the weekend
     if (weekday > 5) throw new BadRequestException('The day is a weekend day');
   }
 }
