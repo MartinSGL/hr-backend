@@ -51,13 +51,8 @@ export class ContingenciesService {
       // validate day is not already taken
       await this.valitateDay(employee_id, createContingencyDto.date);
       // validate user has no more than 3 days
-      await this.valitateNumberOfDays(
-        employee_id,
-        createContingencyDto.half_day,
-        'create',
-      );
+      await this.valitateNumberOfDays(employee_id);
       /*----------------------------------------------------------------------------* */
-
       // get the friendly folio
       const folio = await this.commonService.generateFolio(
         this.contingencyModel,
@@ -140,11 +135,7 @@ export class ContingenciesService {
       // validate day is not already taken
       await this.valitateDay(employee_id, updateContingencyDto.date, id);
       // validate user has no more than 3 days
-      await this.valitateNumberOfDays(
-        employee_id,
-        updateContingencyDto.half_day,
-        'update',
-      );
+      await this.valitateNumberOfDays(employee_id);
 
       /*----------------------------------------------------------------------------* */
       //find and update the document
@@ -227,34 +218,14 @@ export class ContingenciesService {
   }
 
   //validate that employee has still avaliables days or halfdays
-  private async valitateNumberOfDays(
-    id_employee: number,
-    half_day: boolean,
-    operation: 'create' | 'update',
-  ) {
+  private async valitateNumberOfDays(id_employee: number) {
     //half_days return true if employee has halfdays
-    const { totalContingencies, half_days } =
-      await this.getNumerOfDaysAndDaysTaken(id_employee);
+    const { totalContingencies } = await this.getNumerOfDaysAndDaysTaken(
+      id_employee,
+    );
 
-    if (operation === 'create') {
-      if (totalContingencies >= 2.5 && !half_day)
-        throw new BadRequestException(
-          'No more avaliables contingency days (complete days)',
-        );
-
-      if (
-        (totalContingencies >= 3 && half_day) ||
-        (totalContingencies >= 3 && !half_day)
-      )
-        throw new BadRequestException(
-          'No more avaliables contingency days (complete and half days)',
-        );
-    } else {
-      if (totalContingencies === 3 && !half_day && half_days)
-        throw new BadRequestException(
-          'No more avaliables complete contingecy days',
-        );
-    }
+    if (totalContingencies >= 3)
+      throw new BadRequestException('No more avaliables contingency days');
   }
 
   async getNumerOfDaysAndDaysTaken(id_employee: number) {
@@ -264,55 +235,25 @@ export class ContingenciesService {
     const first_day = new Date(`${year}-01-01`);
     const last_day = new Date(`${year + 1}-01-01`);
 
-    //make agregation structure
-    const aggregatorOpts = [
-      {
-        $match: {
-          id_employee,
-          date: {
-            $gte: first_day,
-            $lt: last_day,
-          },
-          status: { $ne: 'canceled' },
-        },
+    //count documents of current day
+    const contingencies = await this.contingencyModel.find({
+      date: {
+        $gte: first_day,
+        $lt: last_day,
       },
-      {
-        $group: {
-          _id: '$half_day',
-          count: { $sum: 1 },
-          days: { $push: '$date' },
-        },
-      },
-    ];
+      id_employee,
+      status: { $ne: 'canceled' },
+    });
 
-    //execute the agregation
-    //return this way [{_id:true,count:2},{_id:false,count:1}]
-    const countContingencies = await this.contingencyModel.aggregate(
-      aggregatorOpts,
-    );
-
-    //start the count in 0
-    let totalContingencies = 0;
-    let half_days = false;
     const days = [];
-    //start adding depending on half day or not
-    //_id referes to half_day
-    countContingencies.forEach((el) => {
-      if (el._id === false) {
-        //complete day
-        totalContingencies = totalContingencies + el.count;
-      } else {
-        //half day
-        totalContingencies = totalContingencies + el.count * 0.5;
-        half_days = true;
-      }
-      days.push(...el.days);
+
+    contingencies.forEach((el) => {
+      days.push(el.date);
     });
 
     return {
-      totalContingencies,
+      totalContingencies: contingencies.length,
       days,
-      half_days,
     };
   }
 
