@@ -51,13 +51,8 @@ export class ContingenciesService {
       // validate day is not already taken
       await this.valitateDay(employee_id, createContingencyDto.date);
       // validate user has no more than 3 days
-      await this.valitateNumberOfDays(
-        employee_id,
-        createContingencyDto.half_day,
-        'create',
-      );
+      await this.valitateNumberOfDays(employee_id);
       /*----------------------------------------------------------------------------* */
-
       // get the friendly folio
       const folio = await this.commonService.generateFolio(
         this.contingencyModel,
@@ -135,16 +130,12 @@ export class ContingenciesService {
   ) {
     try {
       /*--------------------------- Validations ----------------------------------* */
-      //validate that day is not part of the weekend
+      // validate that day is not part of the weekend
       this.validateWeekEndDay(String(updateContingencyDto.date));
       // validate day is not already taken
       await this.valitateDay(employee_id, updateContingencyDto.date, id);
       // validate user has no more than 3 days
-      await this.valitateNumberOfDays(
-        employee_id,
-        updateContingencyDto.half_day,
-        'update',
-      );
+      await this.valitateNumberOfDays(employee_id);
 
       /*----------------------------------------------------------------------------* */
       //find and update the document
@@ -170,7 +161,7 @@ export class ContingenciesService {
     if (contingency.status === 'approved') {
       return this.updateStatus(id, { status: 'canceled' }, id_tm);
     }
-    //delete document in case anyother status
+    //delete document in case another status
     const contingencyDeleted = await contingency.deleteOne({
       _id: id,
       id_employee: id_employee,
@@ -184,7 +175,7 @@ export class ContingenciesService {
     updateStatusContingencyDto: UpdateStatusContingencyDto,
     id_tm: number,
   ) {
-    //validate that if the status is rejected then the observations field must not be empty
+    // validate that if the status is rejected then the observations field must not be empty
     if (
       updateStatusContingencyDto.status === status.rejected &&
       !updateStatusContingencyDto.observations
@@ -192,7 +183,7 @@ export class ContingenciesService {
       throw new BadRequestException('Observations must not be empty');
     }
 
-    //find the document, change the status and observations(only if request is rejected)
+    // find the document, change the status and observations(only if request is rejected)
     const contingencyUpdated = await this.contingencyModel.findOneAndUpdate(
       { _id: id },
       { ...updateStatusContingencyDto, id_tm },
@@ -203,18 +194,18 @@ export class ContingenciesService {
     return { folio: contingencyUpdated.folio };
   }
 
-  //valdiate that the day requested is not already taken
+  // valdiate that the day requested is not already taken
   private async valitateDay(id_employee: number, date: Date, id?: string) {
     let contingency;
     if (!id) {
-      //create operation
+      // create operation
       contingency = await this.contingencyModel.findOne({
         id_employee,
         date,
         status: { $ne: 'canceled' },
       });
     } else {
-      //update operation
+      // update operation
       contingency = await this.contingencyModel.findOne({
         id_employee,
         date,
@@ -226,101 +217,51 @@ export class ContingenciesService {
     if (contingency) throw new BadRequestException('The date is already taken');
   }
 
-  //validate that employee has still avaliables days or halfdays
-  private async valitateNumberOfDays(
-    id_employee: number,
-    half_day: boolean,
-    operation: 'create' | 'update',
-  ) {
-    //half_days return true if employee has halfdays
-    const { totalContingencies, half_days } =
-      await this.getNumerOfDaysAndDaysTaken(id_employee);
+  // validate that employee has still avaliables days or halfdays
+  private async valitateNumberOfDays(id_employee: number) {
+    // half_days return true if employee has halfdays
+    const { totalContingencies } = await this.getNumerOfDaysAndDaysTaken(
+      id_employee,
+    );
 
-    if (operation === 'create') {
-      if (totalContingencies >= 2.5 && !half_day)
-        throw new BadRequestException(
-          'No more avaliables contingency days (complete days)',
-        );
-
-      if (
-        (totalContingencies >= 3 && half_day) ||
-        (totalContingencies >= 3 && !half_day)
-      )
-        throw new BadRequestException(
-          'No more avaliables contingency days (complete and half days)',
-        );
-    } else {
-      if (totalContingencies === 3 && !half_day && half_days)
-        throw new BadRequestException(
-          'No more avaliables complete contingecy days',
-        );
-    }
+    if (totalContingencies >= 3)
+      throw new BadRequestException('No more avaliables contingency days');
   }
 
   async getNumerOfDaysAndDaysTaken(id_employee: number) {
-    //get the current day
-    //TODO: get rid of this hiden dependency (DateTime)
+    // get the current day
+    // TODO: get rid of this hiden dependency (DateTime)
     const { year } = DateTime.now();
     const first_day = new Date(`${year}-01-01`);
     const last_day = new Date(`${year + 1}-01-01`);
 
-    //make agregation structure
-    const aggregatorOpts = [
-      {
-        $match: {
-          id_employee,
-          date: {
-            $gte: first_day,
-            $lt: last_day,
-          },
-          status: { $ne: 'canceled' },
-        },
+    //find documents of current year
+    const contingencies = await this.contingencyModel.find({
+      date: {
+        $gte: first_day,
+        $lt: last_day,
       },
-      {
-        $group: {
-          _id: '$half_day',
-          count: { $sum: 1 },
-          days: { $push: '$date' },
-        },
-      },
-    ];
+      id_employee,
+      status: { $ne: 'canceled' },
+    });
 
-    //execute the agregation
-    //return this way [{_id:true,count:2},{_id:false,count:1}]
-    const countContingencies = await this.contingencyModel.aggregate(
-      aggregatorOpts,
-    );
-
-    //start the count in 0
-    let totalContingencies = 0;
-    let half_days = false;
     const days = [];
-    //start adding depending on half day or not
-    //_id referes to half_day
-    countContingencies.forEach((el) => {
-      if (el._id === false) {
-        //complete day
-        totalContingencies = totalContingencies + el.count;
-      } else {
-        //half day
-        totalContingencies = totalContingencies + el.count * 0.5;
-        half_days = true;
-      }
-      days.push(...el.days);
+    //push dates within the array
+    contingencies.forEach((el) => {
+      days.push(el.date);
     });
 
     return {
-      totalContingencies,
+      totalContingencies: contingencies.length,
       days,
-      half_days,
     };
   }
 
-  //validate contingecy is not a weekend day
+  // validate contingecy is not a weekend day
   validateWeekEndDay(date: string) {
-    //get the number of weekday
+    // get the number of weekday
     const weekday = DateTime.fromISO(date).weekday;
-    //validate that day is not part of the weekend
+    // validate that day is not part of the weekend
     if (weekday > 5) throw new BadRequestException('The day is a weekend day');
   }
 }

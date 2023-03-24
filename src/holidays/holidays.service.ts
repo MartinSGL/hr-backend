@@ -126,6 +126,13 @@ export class HolidaysService {
       //TODO:
       // 1.- validate dates are not weekends
       // esta en servicios en contingency
+
+      holidaysArr.holidays.forEach((el) => {
+        this.commonService.validateWeekEndDay(String(el.date));
+
+        //validar que año coincida con la fecha
+      });
+
       // 2.- validate that dates match with the year given
       // 3.- check transactions or validate that dates are not duplicated
       // throw new BadRequestException('messsage')
