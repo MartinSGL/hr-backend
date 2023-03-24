@@ -73,4 +73,11 @@ export class CommonService {
     // any other error once if statements didn't caught the error
     throw new InternalServerErrorException('Server Error, check logs');
   }
+
+  validateWeekEndDay(date: string) {
+    // get the number of weekday
+    const weekday = DateTime.fromISO(date).weekday;
+    // validate that day is not part of the weekend
+    if (weekday > 5) throw new BadRequestException('The day is a weekend day');
+  }
 }
