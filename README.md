@@ -32,5 +32,5 @@ dev-mode
 yarn start:dev
 ```
 
-- populate the database seeders
+- populate the database seeders (use the endpoint for that)
 

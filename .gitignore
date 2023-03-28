@@ -5,6 +5,9 @@
 #environment files
 .env
 
+#mongo database
+mongo
+
 # Logs
 logs
 *.log
