@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  hr-backend-app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: hr-backend-docker
+    container_name: hr-backend
+    restart: always 
+    ports:
+      - "${PORT}:${PORT}"
+    # working_dir: /var/www/hr-backend
+    environment:
+      MONGO_DB: ${MONGO_DB}
+      PORT: ${PORT}
+      EMAIL: ${EMAIL}
+      JWT_SECRET: ${JWT_SECRET}
+      SEED_PASSWORD: ${SEED_PASSWORD}
+      CLOUD_NAME: ${CLOUD_NAME}
+      API_KEY: ${API_KEY}
+      API_SECRET: ${API_SECRET}
+
+
+
+
