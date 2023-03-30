@@ -59,8 +59,12 @@ export class CommonService {
     // error for violation to unique rule in entity
     if (error.code === 11000) {
       throw new BadRequestException(
-        `Duplicate ${Object.keys(error.keyValue)[0]} : ${
-          error.keyValue[Object.keys(error.keyValue)[0]]
+        `Duplicate ${
+          Object.keys(error.keyValue)[Object.keys(error.keyValue).length - 1]
+        } : ${
+          error.keyValue[
+            Object.keys(error.keyValue)[Object.keys(error.keyValue).length - 1]
+          ]
         }`,
       );
     }

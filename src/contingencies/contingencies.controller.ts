@@ -52,7 +52,10 @@ export class ContingenciesController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @GetUser() user: UserInformation) {
+  remove(
+    @Param('id', ParseMongoIdPipe) id: string,
+    @GetUser() user: UserInformation,
+  ) {
     return this.contingenciesService.remove(id, user.id);
   }
 }
