@@ -10,6 +10,7 @@ import { EnvConfiguration } from './config/app.config';
 import { JoiValidationSchema } from './config/joi.validation';
 import { SenioritiesModule } from './seniorities/seniorities.module';
 import { FilesModule } from './files/files.module';
+import { PreauthorizationsModule } from './preauthorizations/preauthorizations.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { FilesModule } from './files/files.module';
     UsersModule,
     SenioritiesModule,
     FilesModule,
+    PreauthorizationsModule,
   ],
 })
 export class AppModule {}

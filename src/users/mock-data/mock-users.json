@@ -2,8 +2,8 @@
     "users": [
         {
             "id":1,
-            "name":"Monica Ortiz Salazar",
-            "email":"monica.ortiz@improving.com",
+            "name":"Paola Basualdo",
+            "email":"paola.basualdo@improving.com",
             "password": "12345",
             "date_admission": "2017/08/22"
         },
