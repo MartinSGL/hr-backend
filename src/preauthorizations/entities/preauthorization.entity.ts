@@ -7,10 +7,10 @@ export class Preauthorization {
   id_employee: number;
 
   @Prop({ require: true })
-  name: string;
+  name_responsible: string;
 
   @Prop({ require: true })
-  email: string;
+  email_responsible: string;
 
   @Prop({ require: true })
   project_role: ProjectRole;
@@ -18,4 +18,7 @@ export class Preauthorization {
 
 export const PreauthorizationSchema =
   SchemaFactory.createForClass(Preauthorization);
-PreauthorizationSchema.index({ id_employee: 1, email: 1 }, { unique: true });
+PreauthorizationSchema.index(
+  { id_employee: 1, email_responsible: 1 },
+  { unique: true },
+);

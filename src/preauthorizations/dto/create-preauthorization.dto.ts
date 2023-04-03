@@ -6,7 +6,7 @@ import {
 
 export class CreatePreauthorizationDto {
   @IsEmail()
-  email: string;
+  email_responsible: string;
 
   @IsEnum(project_role)
   project_role: ProjectRole;

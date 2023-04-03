@@ -26,7 +26,7 @@ export class PreauthorizationsService {
       //get the employee name
       const employees = await this.userService.findAll();
       const employee = employees.find(
-        (el) => el.email === createPreauthorizationDto.email,
+        (el) => el.email === createPreauthorizationDto.email_responsible,
       );
       //throw error in case email not found
       if (!employee) {
@@ -37,7 +37,7 @@ export class PreauthorizationsService {
         await this.preauthorizationModel.create<Preauthorization>({
           id_employee,
           ...createPreauthorizationDto,
-          name: employee.name,
+          name_responsible: employee.name,
         });
 
       return preauthorization;

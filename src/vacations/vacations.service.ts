@@ -23,10 +23,10 @@ export class VacationsService {
     private readonly commonService: CommonService,
   ) {}
   async create(
-    employee_id: number,
+    employee_id: string,
     createVacationDto: CreateVacationDto,
     client_evidence: Express.Multer.File,
-    createdBy: number,
+    createdBy: string,
     employee_name?: string,
   ) {
     try {
