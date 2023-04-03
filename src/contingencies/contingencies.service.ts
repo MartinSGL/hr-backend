@@ -30,9 +30,9 @@ export class ContingenciesService {
   ) {}
 
   async create(
-    employee_id: number,
+    employee_id: string,
     createContingencyDto: CreateContingencyDto,
-    createdBy: number,
+    createdBy: string,
     employee_name?: string,
   ) {
     try {
@@ -75,7 +75,7 @@ export class ContingenciesService {
     }
   }
 
-  async findAll(id_employee: number, paginationDto: PaginationDto) {
+  async findAll(id_employee: string, paginationDto: PaginationDto) {
     const options = {
       select: ['-__v', '-createdAt', '-updatedAt', '-id_tm', '-createdBy'],
       sort: { _id: -1 },
@@ -112,7 +112,7 @@ export class ContingenciesService {
     return this.contingencyModelPag.paginate(query, options);
   }
 
-  async findOne(id: string, id_employee: number) {
+  async findOne(id: string, id_employee: string) {
     const contingency = await this.contingencyModel.findOne({
       _id: id,
       id_employee,
@@ -126,7 +126,7 @@ export class ContingenciesService {
   async update(
     id: string,
     updateContingencyDto: UpdateContingencyDto,
-    employee_id: number,
+    employee_id: string,
   ) {
     try {
       /*--------------------------- Validations ----------------------------------* */
@@ -154,7 +154,7 @@ export class ContingenciesService {
     }
   }
 
-  async remove(id: string, id_employee: number, id_tm = 0) {
+  async remove(id: string, id_employee: string, id_tm = '0') {
     //find the documents
     const contingency = await this.findOne(id, id_employee);
     //change the status to canceled if status is already approved
@@ -173,7 +173,7 @@ export class ContingenciesService {
   async updateStatus(
     id: string,
     updateStatusContingencyDto: UpdateStatusContingencyDto,
-    id_tm: number,
+    id_tm: string,
   ) {
     // validate that if the status is rejected then the observations field must not be empty
     if (
@@ -195,7 +195,7 @@ export class ContingenciesService {
   }
 
   // valdiate that the day requested is not already taken
-  private async valitateDay(id_employee: number, date: Date, id?: string) {
+  private async valitateDay(id_employee: string, date: Date, id?: string) {
     let contingency;
     if (!id) {
       // create operation
@@ -218,7 +218,7 @@ export class ContingenciesService {
   }
 
   // validate that employee has still avaliables days or halfdays
-  private async valitateNumberOfDays(id_employee: number) {
+  private async valitateNumberOfDays(id_employee: string) {
     // half_days return true if employee has halfdays
     const { totalContingencies } = await this.getNumerOfDaysAndDaysTaken(
       id_employee,
@@ -228,7 +228,7 @@ export class ContingenciesService {
       throw new BadRequestException('No more avaliables contingency days');
   }
 
-  async getNumerOfDaysAndDaysTaken(id_employee: number) {
+  async getNumerOfDaysAndDaysTaken(id_employee: string) {
     // get the current day
     // TODO: get rid of this hiden dependency (DateTime)
     const { year } = DateTime.now();

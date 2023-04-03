@@ -9,7 +9,7 @@ export class Contingency {
   folio: string;
 
   @Prop({ required: true, index: true })
-  id_employee: number;
+  id_employee: string;
 
   @Prop({ required: true })
   name_employee: string;
@@ -27,10 +27,10 @@ export class Contingency {
   observations?: string;
 
   @Prop({ required: true, default: 0 })
-  id_tm?: number;
+  id_tm?: string;
 
   @Prop({ required: true })
-  createdBy: number;
+  createdBy: string;
 }
 
 export interface ContingencyDocument extends Contingency, Document {}

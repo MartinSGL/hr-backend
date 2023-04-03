@@ -29,7 +29,7 @@ export class CatalogueHoliday {
   isActive?: boolean;
 
   @Prop({ required: true })
-  id_tm: number;
+  id_tm: string;
 }
 
 export const CatalogueHolidaySchema =
