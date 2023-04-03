@@ -28,7 +28,7 @@ export class Vacation {
   @Prop({ default: '' })
   observations?: string;
 
-  @Prop({ required: true, default: 0 })
+  @Prop({ default: '0' })
   id_tm?: number;
 
   @Prop({ required: true })

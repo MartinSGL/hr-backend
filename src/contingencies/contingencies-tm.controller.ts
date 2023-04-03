@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -33,7 +32,7 @@ export class ContingenciesControllerTM {
   @Patch('requests/update-status/:id')
   @Auth('admin')
   updateStatus(
-    @Param('id', ParseMongoIdPipe) id: string,
+    @Param('id') id: string,
     @Body() updateStatusContingencyDto: UpdateStatusContingencyDto,
     @GetUser() user: UserInformation,
   ) {
@@ -47,7 +46,7 @@ export class ContingenciesControllerTM {
   @Get(':id_employee')
   @Auth('admin') // only users with role 'admin' can use this
   fillAllContingenciesByEmployee(
-    @Param('id_employee', ParseIntPipe) id_employee: number,
+    @Param('id_employee') id_employee: string,
     @Query() paginationDto: PaginationDto,
   ) {
     return this.contingenciesService.findAll(id_employee, paginationDto);
@@ -57,7 +56,7 @@ export class ContingenciesControllerTM {
   @Auth('admin') // only users with role 'admin' can use this
   create(
     @Body() createContingencyDto: CreateContingencyDto,
-    @Param('id_employee', ParseIntPipe) id_employee: number,
+    @Param('id_employee') id_employee: string,
     @GetUser() user: UserInformation,
   ) {
     return this.contingenciesService.create(
@@ -70,7 +69,7 @@ export class ContingenciesControllerTM {
   @Patch(':id_employee/:id')
   @Auth('admin') // only users with role 'admin' can use this
   update(
-    @Param('id_employee', ParseIntPipe) id_employee: number,
+    @Param('id_employee') id_employee: string,
     @Param('id', ParseMongoIdPipe) id: string,
     @Body() updateContingencyDto: UpdateContingencyDto,
   ) {
@@ -84,7 +83,7 @@ export class ContingenciesControllerTM {
   @Delete(':id_employee/:id')
   @Auth('admin') // only users with role 'admin' can use this
   remove(
-    @Param('id_employee', ParseIntPipe) id_employee: number,
+    @Param('id_employee') id_employee: string,
     @Param('id', ParseMongoIdPipe) id: string,
     @GetUser() user: UserInformation,
   ) {

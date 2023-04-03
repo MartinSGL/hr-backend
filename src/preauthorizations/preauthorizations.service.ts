@@ -20,7 +20,7 @@ export class PreauthorizationsService {
 
   async create(
     createPreauthorizationDto: CreatePreauthorizationDto,
-    id_employee: number,
+    id_employee: string,
   ) {
     try {
       //get the employee name
@@ -36,6 +36,7 @@ export class PreauthorizationsService {
       const preauthorization =
         await this.preauthorizationModel.create<Preauthorization>({
           id_employee,
+          id_responsible: employee.id,
           ...createPreauthorizationDto,
           name_responsible: employee.name,
         });
@@ -47,14 +48,14 @@ export class PreauthorizationsService {
     }
   }
 
-  async findAll(id_employee: number) {
+  async findAll(id_employee: string) {
     const preauthorizations = await this.preauthorizationModel.find({
       id_employee,
     });
     return preauthorizations;
   }
 
-  async remove(id: string, user_id: number) {
+  async remove(id: string, user_id: string) {
     const preauthorizationDeleted =
       await this.preauthorizationModel.findOneAndRemove({
         id,

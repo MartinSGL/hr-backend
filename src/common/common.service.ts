@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { DateTime } from 'luxon';
 import { Model } from 'mongoose';
+import { PreauthorizationsService } from 'src/preauthorizations/preauthorizations.service';
 import { TypeRequest } from './interfaces/type-request-folio.interface';
 
 @Injectable()
@@ -76,6 +77,35 @@ export class CommonService {
 
     // any other error once if statements didn't caught the error
     throw new InternalServerErrorException('Server Error, check logs');
+  }
+
+  async getResponsibles(model: PreauthorizationsService, employee_id: string) {
+    //get responsibles for project--------------------------------------------------
+    const resopnsiblesArray = await model.findAll(employee_id);
+
+    if (resopnsiblesArray.length < 1) {
+      throw new BadRequestException(
+        'You need to register at least one project responsible',
+      );
+    }
+
+    const formatProjectResponsibles = resopnsiblesArray.map(
+      ({
+        id_responsible: id,
+        name_responsible: name,
+        email_responsible: email,
+        project_role,
+      }) => {
+        return {
+          id,
+          name,
+          email,
+          project_role,
+        };
+      },
+    );
+
+    return formatProjectResponsibles;
   }
 
   validateWeekEndDay(date: string) {
