@@ -2,6 +2,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { Status, status } from 'src/common/interfaces/status.interface';
 import * as paginate from 'mongoose-paginate-v2';
+import {
+  ProjectResponsibles,
+  ProjectResponsiblesSchema,
+} from 'src/common/entities/project-responsibles.entity';
 
 @Schema({ timestamps: true })
 export class Contingency {
@@ -26,7 +30,10 @@ export class Contingency {
   @Prop({ default: '' })
   observations?: string;
 
-  @Prop({ required: true, default: 0 })
+  @Prop({ type: [ProjectResponsiblesSchema], required: true })
+  project_responsibles: ProjectResponsibles[];
+
+  @Prop({ default: '0' })
   id_tm?: string;
 
   @Prop({ required: true })

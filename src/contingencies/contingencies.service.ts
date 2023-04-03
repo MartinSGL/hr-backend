@@ -15,6 +15,7 @@ import { status } from 'src/common/interfaces/status.interface';
 import { DateTime } from 'luxon';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import * as mockData from '../users/mock-data/mock-users.json';
+import { PreauthorizationsService } from '../preauthorizations/preauthorizations.service';
 
 @Injectable()
 export class ContingenciesService {
@@ -25,6 +26,8 @@ export class ContingenciesService {
     //model used to easier the pagination using library mongoose-paginate-v2
     @InjectModel(Contingency.name)
     private readonly contingencyModelPag: PaginateModel<ContingencyDocument>,
+    //user responsibles of projects
+    private readonly preauthorizeService: PreauthorizationsService,
     //generic services needed in most of the modules (generateFolio, etc)
     private readonly commonService: CommonService,
   ) {}
@@ -59,6 +62,12 @@ export class ContingenciesService {
         'CON',
       );
 
+      //get responsibles
+      const responsibles = await this.commonService.getResponsibles(
+        this.preauthorizeService,
+        employee_id,
+      );
+
       //create contingency
       const contigency = await this.contingencyModel.create<Contingency>({
         folio: folio,
@@ -66,6 +75,7 @@ export class ContingenciesService {
         name_employee: name,
         ...createContingencyDto,
         createdBy,
+        project_responsibles: responsibles,
       });
 
       return { folio: contigency.folio };

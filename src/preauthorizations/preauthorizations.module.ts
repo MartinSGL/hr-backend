@@ -22,5 +22,6 @@ import { UsersModule } from 'src/users/users.module';
     ]),
     UsersModule,
   ],
+  exports: [PreauthorizationsService],
 })
 export class PreauthorizationsModule {}

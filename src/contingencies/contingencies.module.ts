@@ -6,6 +6,7 @@ import { Contingency, ContingencySchema } from './entities/contingency.entity';
 import { CommonModule } from 'src/common/common.module';
 import { UsersModule } from 'src/users/users.module';
 import { ContingenciesControllerTM } from './contingencies-tm.controller';
+import { PreauthorizationsModule } from '../preauthorizations/preauthorizations.module';
 
 @Module({
   controllers: [ContingenciesController, ContingenciesControllerTM],
@@ -19,6 +20,7 @@ import { ContingenciesControllerTM } from './contingencies-tm.controller';
       },
     ]),
     UsersModule,
+    PreauthorizationsModule,
   ],
 })
 export class ContingenciesModule {}

@@ -23,7 +23,7 @@ export class HolidaysService {
     @InjectConnection()
     private readonly connection: mongoose.Connection,
   ) {}
-  async createCatalogue(createCatalogueDto: CreateCatalogueDto, id_tm: number) {
+  async createCatalogue(createCatalogueDto: CreateCatalogueDto, id_tm: string) {
     try {
       createCatalogueDto.name = createCatalogueDto.name.toLowerCase();
       const holidayCatalogue =
@@ -50,7 +50,7 @@ export class HolidaysService {
   async updateCatalogue(
     id: string,
     updateCatalogueDto: UpdateCatalogueDto,
-    id_tm: number,
+    id_tm: string,
   ) {
     try {
       updateCatalogueDto.name = updateCatalogueDto.name.toLowerCase();
@@ -116,7 +116,7 @@ export class HolidaysService {
   async addHolidays(
     holidaysArr: { holidays: CreateHolidayDto[] },
     year: number,
-    id_tm: number,
+    id_tm: string,
   ) {
     try {
       const dataToInsert = holidaysArr.holidays.map((holiday) => {

@@ -11,7 +11,7 @@ export class Holiday {
   id_holiday: string;
 
   @Prop({ required: true })
-  id_tm: number;
+  id_tm: string;
 }
 
 export const HolidaySchema = SchemaFactory.createForClass(Holiday);
