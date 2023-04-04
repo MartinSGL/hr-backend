@@ -14,4 +14,8 @@ export const EnvConfiguration = () => ({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.API_KEY,
   api_secret: process.env.API_SECRET,
+  //nodemailer
+  nodemailer_service: process.env.NODEMAILER_SERVICE,
+  nodemailer_email: process.env.NODEMAILER_EMAIL,
+  nodemailer_password: process.env.NODEMAILER_PASSWORD,
 });

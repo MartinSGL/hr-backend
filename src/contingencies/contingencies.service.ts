@@ -16,6 +16,7 @@ import { DateTime } from 'luxon';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import * as mockData from '../users/mock-data/mock-users.json';
 import { PreauthorizationsService } from '../preauthorizations/preauthorizations.service';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class ContingenciesService {
@@ -30,6 +31,8 @@ export class ContingenciesService {
     private readonly preauthorizeService: PreauthorizationsService,
     //generic services needed in most of the modules (generateFolio, etc)
     private readonly commonService: CommonService,
+    //service to send email
+    private readonly mailService: MailService,
   ) {}
 
   async create(
@@ -77,6 +80,15 @@ export class ContingenciesService {
         createdBy,
         project_responsibles: responsibles,
       });
+
+      //send email
+      await this.mailService.sendUserConfirmation(
+        'hola perro, ven mañana a la oficina',
+        {
+          email: 'martin.gaytan@improving.com',
+          name: 'chavin gaytan',
+        },
+      );
 
       return { folio: contigency.folio };
     } catch (error: any) {

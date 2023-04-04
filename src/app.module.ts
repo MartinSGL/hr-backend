@@ -11,6 +11,7 @@ import { JoiValidationSchema } from './config/joi.validation';
 import { SenioritiesModule } from './seniorities/seniorities.module';
 import { FilesModule } from './files/files.module';
 import { PreauthorizationsModule } from './preauthorizations/preauthorizations.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { PreauthorizationsModule } from './preauthorizations/preauthorizations.m
     SenioritiesModule,
     FilesModule,
     PreauthorizationsModule,
+    MailModule,
   ],
 })
 export class AppModule {}

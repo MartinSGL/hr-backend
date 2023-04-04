@@ -11,4 +11,7 @@ export const JoiValidationSchema = Joi.object({
   CLOUD_NAME: Joi.string().required(),
   API_KEY: Joi.string().required(),
   API_SECRET: Joi.string().required(),
+  NODEMAILER_SERVICE: Joi.string().required(),
+  NODEMAILER_EMAIL: Joi.string().required(),
+  NODEMAILER_PASSWORD: Joi.string().required(),
 });
