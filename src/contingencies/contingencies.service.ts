@@ -81,14 +81,29 @@ export class ContingenciesService {
         project_responsibles: responsibles,
       });
 
-      //send email
-      await this.mailService.sendUserConfirmation(
-        'hola perro, ven mañana a la oficina',
-        {
-          email: 'martin.gaytan@improving.com',
-          name: 'chavin gaytan',
-        },
-      );
+      //send email to the responsibles of preauthorization
+      for (const responsible of responsibles) {
+        //get token with informaiton
+        const token = await this.commonService.generateJWTUrlForEmail({
+          id_employee: employee_id,
+          id_preauthorizator: responsible.id,
+          id_request: contigency._id,
+          folio: folio,
+          dates: [String(createContingencyDto.date)],
+          requestType: 'Contingency',
+        });
+        const base = 'http://localhost:3001/requests/preauthorization/';
+        const url = base + token;
+
+        await this.mailService.sendUserConfirmation({
+          responsible_name: responsible.name,
+          responsible_email: responsible.email,
+          employee_name: name,
+          requestType: 'Contingency',
+          folio,
+          url,
+        });
+      }
 
       return { folio: contigency.folio };
     } catch (error: any) {

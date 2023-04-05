@@ -4,14 +4,22 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { DateTime } from 'luxon';
-import { Model } from 'mongoose';
+import mongoose, { Model, ObjectId, Schema } from 'mongoose';
+import { JwtService } from '@nestjs/jwt';
 import { PreauthorizationsService } from 'src/preauthorizations/preauthorizations.service';
-import { TypeRequest } from './interfaces/type-request-folio.interface';
+import {
+  RequestType,
+  TypeRequestFolio,
+} from './interfaces/type-request-folio.interface';
 
 @Injectable()
 export class CommonService {
+  constructor(private readonly jwtTokenService: JwtService) {}
   //functon to generate folio according to the type of request
-  async generateFolio(model: Model<any>, type: TypeRequest[keyof TypeRequest]) {
+  async generateFolio(
+    model: Model<any>,
+    type: TypeRequestFolio[keyof TypeRequestFolio],
+  ) {
     //search last today's documents
     //TODO: get rid of the hide dependency 'DateTime' from luxon using adapt pattern design
     const today = DateTime.now().setLocale('zh').toLocaleString();
@@ -113,5 +121,34 @@ export class CommonService {
     const weekday = DateTime.fromISO(date).weekday;
     // validate that day is not part of the weekend
     if (weekday > 5) throw new BadRequestException('The day is a weekend day');
+  }
+
+  async generateJWTUrlForEmail(data: {
+    id_employee: string;
+    id_preauthorizator: string;
+    id_request: mongoose.Types.ObjectId;
+    folio: string;
+    dates: string[];
+    requestType: RequestType;
+  }) {
+    const {
+      id_employee,
+      id_preauthorizator,
+      id_request,
+      folio,
+      dates,
+      requestType,
+    } = data;
+
+    const token = this.jwtTokenService.sign({
+      id_employee,
+      id_preauthorizator,
+      id_request,
+      folio,
+      dates,
+      requestType,
+    });
+
+    return token;
   }
 }
