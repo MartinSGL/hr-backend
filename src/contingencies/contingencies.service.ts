@@ -84,16 +84,13 @@ export class ContingenciesService {
       //send email to the responsibles of preauthorization
       for (const responsible of responsibles) {
         //get token with informaiton
-        const token = await this.commonService.generateJWTUrlForEmail({
-          id_employee: employee_id,
-          id_preauthorizator: responsible.id,
+        const url = await this.commonService.generateUrlJWTForEmail({
+          email_responsible: responsible.email,
           id_request: contigency._id,
           folio: folio,
           dates: [String(createContingencyDto.date)],
           requestType: 'Contingency',
         });
-        const base = 'http://localhost:3001/requests/preauthorization/';
-        const url = base + token;
 
         await this.mailService.sendUserConfirmation({
           responsible_name: responsible.name,

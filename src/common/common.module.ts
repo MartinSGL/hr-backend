@@ -9,12 +9,16 @@ import { CommonService } from './common.service';
   providers: [CommonService],
   exports: [CommonService],
   imports: [
+    ConfigModule,
+    //this JWT generated is not to validates users
+    //this is to encrypte the url of preauthorization
+    //that's why is only last one hour
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         return {
-          secret: configService.get('JWT_SECRET'),
+          secret: configService.get('JWT_URL'),
           signOptions: {
             expiresIn: '1h',
           },

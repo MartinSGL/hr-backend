@@ -10,13 +10,10 @@ import {
 
 @Schema({ _id: false })
 export class ProjectResponsibles {
-  @Prop({ required: true, index: true })
-  id: string;
-
   @Prop({ require: true })
   name: string;
 
-  @Prop({ require: true })
+  @Prop({ require: true, unique: true })
   email: string;
 
   @Prop({ require: true, enum: project_roles })

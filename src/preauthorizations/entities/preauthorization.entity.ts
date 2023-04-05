@@ -9,9 +9,6 @@ export class Preauthorization {
   @Prop({ required: true, index: true })
   id_employee: string;
 
-  @Prop({ required: true })
-  id_responsible: string;
-
   @Prop({ require: true })
   name_responsible: string;
 

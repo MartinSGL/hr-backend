@@ -18,4 +18,8 @@ export const EnvConfiguration = () => ({
   nodemailer_service: process.env.NODEMAILER_SERVICE,
   nodemailer_email: process.env.NODEMAILER_EMAIL,
   nodemailer_password: process.env.NODEMAILER_PASSWORD,
+  //URL_ENCRYPTED
+  jwt_url: process.env.JWT_URL,
+  request_preauthorization_url_base:
+    process.env.REQUEST_PREAUTHORIZATION_URL_BASE,
 });

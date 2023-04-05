@@ -4,9 +4,10 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { DateTime } from 'luxon';
-import mongoose, { Model, ObjectId, Schema } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { PreauthorizationsService } from 'src/preauthorizations/preauthorizations.service';
+import { ConfigService } from '@nestjs/config';
 import {
   RequestType,
   TypeRequestFolio,
@@ -14,7 +15,10 @@ import {
 
 @Injectable()
 export class CommonService {
-  constructor(private readonly jwtTokenService: JwtService) {}
+  constructor(
+    private readonly jwtTokenService: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
   //functon to generate folio according to the type of request
   async generateFolio(
     model: Model<any>,
@@ -98,14 +102,8 @@ export class CommonService {
     }
 
     const formatProjectResponsibles = resopnsiblesArray.map(
-      ({
-        id_responsible: id,
-        name_responsible: name,
-        email_responsible: email,
-        project_role,
-      }) => {
+      ({ name_responsible: name, email_responsible: email, project_role }) => {
         return {
-          id,
           name,
           email,
           project_role,
@@ -123,32 +121,26 @@ export class CommonService {
     if (weekday > 5) throw new BadRequestException('The day is a weekend day');
   }
 
-  async generateJWTUrlForEmail(data: {
-    id_employee: string;
-    id_preauthorizator: string;
+  async generateUrlJWTForEmail(data: {
+    email_responsible: string;
     id_request: mongoose.Types.ObjectId;
     folio: string;
     dates: string[];
     requestType: RequestType;
   }) {
-    const {
-      id_employee,
-      id_preauthorizator,
-      id_request,
-      folio,
-      dates,
-      requestType,
-    } = data;
+    const { email_responsible, id_request, folio, dates, requestType } = data;
 
     const token = this.jwtTokenService.sign({
-      id_employee,
-      id_preauthorizator,
+      email_responsible,
       id_request,
       folio,
       dates,
       requestType,
     });
 
-    return token;
+    const base = this.configService.get('request_preauthorization_url_base');
+    const url = base + token;
+
+    return url;
   }
 }

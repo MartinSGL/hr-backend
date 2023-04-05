@@ -14,4 +14,6 @@ export const JoiValidationSchema = Joi.object({
   NODEMAILER_SERVICE: Joi.string().required(),
   NODEMAILER_EMAIL: Joi.string().required(),
   NODEMAILER_PASSWORD: Joi.string().required(),
+  JWT_URL: Joi.string().required(),
+  REQUEST_PREAUTHORIZATION_URL_BASE: Joi.string().required(),
 });

@@ -36,7 +36,6 @@ export class PreauthorizationsService {
       const preauthorization =
         await this.preauthorizationModel.create<Preauthorization>({
           id_employee,
-          id_responsible: employee.id,
           ...createPreauthorizationDto,
           name_responsible: employee.name,
         });
