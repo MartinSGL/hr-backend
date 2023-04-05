@@ -1,7 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { MongooseModule } from '@nestjs/mongoose';
 import { CommonService } from './common.service';
+import {
+  TokenPreauthorization,
+  TokenPreauthorizationSchema,
+} from './entities/url-preauthorization.entity';
 
 //this module has the features that works in more than one module
 //example: paginationDto and generateFolio service
@@ -25,6 +30,12 @@ import { CommonService } from './common.service';
         };
       },
     }),
+    MongooseModule.forFeature([
+      {
+        name: TokenPreauthorization.name,
+        schema: TokenPreauthorizationSchema,
+      },
+    ]),
   ],
 })
 export class CommonModule {}

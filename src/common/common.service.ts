@@ -12,13 +12,21 @@ import {
   RequestType,
   TypeRequestFolio,
 } from './interfaces/type-request-folio.interface';
+import { TokenPreauthorization } from './entities/url-preauthorization.entity';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class CommonService {
   constructor(
+    //generate token to encrypt the payload of url preauthorization
     private readonly jwtTokenService: JwtService,
+    //get variables from env
     private readonly configService: ConfigService,
+    //save the url for preauthorizations
+    @InjectModel(TokenPreauthorization.name)
+    private readonly tokenPreauthorizationModel: Model<TokenPreauthorization>,
   ) {}
+
   //functon to generate folio according to the type of request
   async generateFolio(
     model: Model<any>,
@@ -140,6 +148,10 @@ export class CommonService {
 
     const base = this.configService.get('request_preauthorization_url_base');
     const url = base + token;
+
+    await this.tokenPreauthorizationModel.create<TokenPreauthorization>({
+      token,
+    });
 
     return url;
   }
