@@ -70,4 +70,9 @@ export class PreauthorizationsService {
       this.commonService.handleError(error);
     }
   }
+
+  async valitateTokenUrl(token: string) {
+    console.log(token);
+    return this.commonService.valitateTokenUrl(token);
+  }
 }
