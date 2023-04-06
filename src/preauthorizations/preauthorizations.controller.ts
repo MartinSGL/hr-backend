@@ -1,4 +1,4 @@
-import { Controller, Body, Param, Patch, Post, Get } from '@nestjs/common';
+import { Controller, Body, Param, Patch, Get } from '@nestjs/common';
 import { PreauthorizationsService } from './preauthorizations.service';
 import { ParseMongoIdPipe } from 'src/common/pipe/parse-mongo-id.pipe';
 import { UpdateStatusPreauthorizationDto } from './dto/update-status-preauthorization.dto';
