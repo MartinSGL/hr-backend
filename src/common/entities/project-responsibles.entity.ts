@@ -2,7 +2,7 @@ import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import {
   ProjectRole,
   project_roles,
-} from 'src/preauthorizations/interfaces/project-role.interface';
+} from 'src/project-responsables/interfaces/project-role.interface';
 import {
   StatusPreauthorization,
   statusPreauthorizaton,

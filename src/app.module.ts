@@ -12,6 +12,7 @@ import { SenioritiesModule } from './seniorities/seniorities.module';
 import { FilesModule } from './files/files.module';
 import { PreauthorizationsModule } from './preauthorizations/preauthorizations.module';
 import { MailModule } from './mail/mail.module';
+import { ProjectResponsablesModule } from './project-responsables/project-responsables.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { MailModule } from './mail/mail.module';
     FilesModule,
     PreauthorizationsModule,
     MailModule,
+    ProjectResponsablesModule,
   ],
 })
 export class AppModule {}

@@ -6,7 +6,7 @@ import { CommonService } from './common.service';
 import {
   TokenPreauthorization,
   TokenPreauthorizationSchema,
-} from './entities/url-preauthorization.entity';
+} from './entities/token-preauthorization.entity';
 
 //this module has the features that works in more than one module
 //example: paginationDto and generateFolio service

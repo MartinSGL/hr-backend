@@ -2,64 +2,72 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CommonService } from 'src/common/common.service';
-import { UsersService } from 'src/users/users.service';
-import { CreatePreauthorizationDto } from './dto/create-preauthorization.dto';
-import { Preauthorization } from './entities/preauthorization.entity';
+import { Contingency } from 'src/contingencies/entities/contingency.entity';
+import { UpdateStatusPreauthorizationDto } from './dto/update-status-preauthorization.dto';
 
 @Injectable()
 export class PreauthorizationsService {
   constructor(
-    //model for the rest of transactions that no need pagination
-    @InjectModel(Preauthorization.name)
-    private readonly preauthorizationModel: Model<Preauthorization>,
-    //generic services needed in most of the modules (generateFolio, etc)
-    private readonly userService: UsersService,
+    @InjectModel(Contingency.name)
+    private readonly contingencyModel: Model<Contingency>,
     //generic services needed in most of the modules (generateFolio, etc)
     private readonly commonService: CommonService,
   ) {}
-
-  async create(
-    createPreauthorizationDto: CreatePreauthorizationDto,
-    id_employee: string,
+  async updateStatus(
+    id: string,
+    updateStatusPreauthorizationDto: UpdateStatusPreauthorizationDto,
   ) {
     try {
-      //get the employee name
-      const employees = await this.userService.findAll();
-      const employee = employees.find(
-        (el) => el.email === createPreauthorizationDto.email_responsible,
-      );
-      //throw error in case email not found
-      if (!employee) {
-        throw new BadRequestException('incorrect email');
+      let model: Model<any>;
+      const { email, status, observations, requestType, token } =
+        updateStatusPreauthorizationDto;
+      //choose de model acording to the type of requests
+      if (requestType === 'Contingency') {
+        model = this.contingencyModel;
+      }
+      //validate if request exists
+      const document = await model.findOne({ _id: id });
+      if (!document) {
+        throw new BadRequestException('Request not found');
       }
 
-      const preauthorization =
-        await this.preauthorizationModel.create<Preauthorization>({
-          id_employee,
-          ...createPreauthorizationDto,
-          name_responsible: employee.name,
-        });
+      //validate if email is a preauthorizator
+      const preauthorize_response = document.project_responsibles.some(
+        (el) => el.email === email && el.preauthorize === 'pending',
+      );
 
-      return preauthorization;
+      if (!preauthorize_response) {
+        throw new BadRequestException(
+          'incorrect email or preauthorization has been done ',
+        );
+      }
+
+      if (status === 'approved') {
+        await model.updateOne(
+          { _id: id },
+          { $set: { 'project_responsibles.$[el].preauthorize': status } },
+          { arrayFilters: [{ 'el.email': email }] },
+        );
+      } else if (status === 'rejected') {
+        if (!observations || observations.trim() === '') {
+          throw new BadRequestException('observations must be not empty');
+        }
+        await model.updateOne(
+          { _id: id },
+          {
+            $set: {
+              'project_responsibles.$[el].preauthorize': status,
+              'project_responsibles.$[el].observations': observations,
+            },
+          },
+          { arrayFilters: [{ 'el.email': email }] },
+        );
+      }
+      await this.commonService.deleteUrlJWTForEmail(token);
+      return `Request has been ${updateStatusPreauthorizationDto.status}`;
     } catch (error) {
       //global function to handdle the error
       this.commonService.handleError(error);
     }
-  }
-
-  async findAll(id_employee: string) {
-    const preauthorizations = await this.preauthorizationModel.find({
-      id_employee,
-    });
-    return preauthorizations;
-  }
-
-  async remove(id: string, user_id: string) {
-    const preauthorizationDeleted =
-      await this.preauthorizationModel.findOneAndRemove({
-        id,
-        id_employee: user_id,
-      });
-    return preauthorizationDeleted;
   }
 }

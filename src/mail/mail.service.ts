@@ -1,6 +1,6 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import { RequestType } from 'src/common/interfaces/type-request-folio.interface';
+import { RequestType } from 'src/common/interfaces/type-request.interface';
 
 interface Mail {
   responsible_name: string;

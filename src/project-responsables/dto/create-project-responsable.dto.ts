@@ -2,9 +2,9 @@ import { IsEmail, IsEnum } from 'class-validator';
 import {
   ProjectRole,
   project_roles,
-} from '../interfaces/project-role.interface';
+} from 'src/project-responsables/interfaces/project-role.interface';
 
-export class CreatePreauthorizationDto {
+export class CreateProjectResponsableDto {
   @IsEmail()
   email_responsible: string;
 

@@ -6,14 +6,14 @@ import {
 import { DateTime } from 'luxon';
 import mongoose, { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
-import { PreauthorizationsService } from 'src/preauthorizations/preauthorizations.service';
 import { ConfigService } from '@nestjs/config';
 import {
   RequestType,
   TypeRequestFolio,
-} from './interfaces/type-request-folio.interface';
-import { TokenPreauthorization } from './entities/url-preauthorization.entity';
+} from './interfaces/type-request.interface';
+import { TokenPreauthorization } from './entities/token-preauthorization.entity';
 import { InjectModel } from '@nestjs/mongoose';
+import { ProjectResponsablesService } from 'src/project-responsables/project-responsables.service';
 
 @Injectable()
 export class CommonService {
@@ -99,17 +99,20 @@ export class CommonService {
     throw new InternalServerErrorException('Server Error, check logs');
   }
 
-  async getResponsibles(model: PreauthorizationsService, employee_id: string) {
+  async getResponsibles(
+    service: ProjectResponsablesService,
+    employee_id: string,
+  ) {
     //get responsibles for project--------------------------------------------------
-    const resopnsiblesArray = await model.findAll(employee_id);
+    const responsiblesArray = await service.findAll(employee_id);
 
-    if (resopnsiblesArray.length < 1) {
+    if (responsiblesArray.length < 1) {
       throw new BadRequestException(
         'You need to register at least one project responsible',
       );
     }
 
-    const formatProjectResponsibles = resopnsiblesArray.map(
+    const formatProjectResponsibles = responsiblesArray.map(
       ({ name_responsible: name, email_responsible: email, project_role }) => {
         return {
           name,
@@ -136,23 +139,37 @@ export class CommonService {
     dates: string[];
     requestType: RequestType;
   }) {
-    const { email_responsible, id_request, folio, dates, requestType } = data;
+    try {
+      const { email_responsible, id_request, folio, dates, requestType } = data;
 
-    const token = this.jwtTokenService.sign({
-      email_responsible,
-      id_request,
-      folio,
-      dates,
-      requestType,
-    });
+      const token = this.jwtTokenService.sign({
+        email_responsible,
+        id_request,
+        folio,
+        dates,
+        requestType,
+      });
 
-    const base = this.configService.get('request_preauthorization_url_base');
-    const url = base + token;
+      const base = this.configService.get('request_preauthorization_url_base');
+      const url = `${base}?hash=${token}`;
 
-    await this.tokenPreauthorizationModel.create<TokenPreauthorization>({
-      token,
-    });
+      await this.tokenPreauthorizationModel.create<TokenPreauthorization>({
+        token,
+      });
 
-    return url;
+      return url;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async deleteUrlJWTForEmail(token) {
+    try {
+      await this.tokenPreauthorizationModel.deleteMany({
+        token,
+      });
+    } catch (error) {
+      this.handleError(error);
+    }
   }
 }
