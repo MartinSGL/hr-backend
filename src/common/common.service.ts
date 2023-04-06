@@ -172,4 +172,12 @@ export class CommonService {
       this.handleError(error);
     }
   }
+
+  async valitateTokenUrl(token: string) {
+    const urlToken = await this.tokenPreauthorizationModel.findOne({ token });
+    if (!urlToken) {
+      throw new BadRequestException('token not found');
+    }
+    return urlToken;
+  }
 }
