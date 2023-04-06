@@ -1,16 +1,11 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import {
-  ProjectRole,
-  project_roles,
-} from '../interfaces/project-role.interface';
+import { ProjectRole } from 'src/project-responsables/interfaces/project-role.interface';
+import { project_roles } from '../interfaces/project-role.interface';
 
 @Schema({ timestamps: true })
-export class Preauthorization {
+export class ProjectResponsable {
   @Prop({ required: true, index: true })
   id_employee: string;
-
-  @Prop({ required: true })
-  id_responsible: string;
 
   @Prop({ require: true })
   name_responsible: string;
@@ -18,13 +13,13 @@ export class Preauthorization {
   @Prop({ require: true })
   email_responsible: string;
 
-  @Prop({ require: true })
+  @Prop({ require: true, enum: project_roles })
   project_role: ProjectRole;
 }
 
-export const PreauthorizationSchema =
-  SchemaFactory.createForClass(Preauthorization);
-PreauthorizationSchema.index(
+export const ProjectResponsableSchema =
+  SchemaFactory.createForClass(ProjectResponsable);
+ProjectResponsableSchema.index(
   { id_employee: 1, email_responsible: 1 },
   { unique: true },
 );

@@ -15,8 +15,8 @@ import { status } from 'src/common/interfaces/status.interface';
 import { DateTime } from 'luxon';
 import { PaginationDto } from '../common/dto/pagination.dto';
 import * as mockData from '../users/mock-data/mock-users.json';
-import { PreauthorizationsService } from '../preauthorizations/preauthorizations.service';
 import { MailService } from 'src/mail/mail.service';
+import { ProjectResponsablesService } from 'src/project-responsables/project-responsables.service';
 
 @Injectable()
 export class ContingenciesService {
@@ -28,7 +28,7 @@ export class ContingenciesService {
     @InjectModel(Contingency.name)
     private readonly contingencyModelPag: PaginateModel<ContingencyDocument>,
     //user responsibles of projects
-    private readonly preauthorizeService: PreauthorizationsService,
+    private readonly projectResponsablesService: ProjectResponsablesService,
     //generic services needed in most of the modules (generateFolio, etc)
     private readonly commonService: CommonService,
     //service to send email
@@ -67,7 +67,7 @@ export class ContingenciesService {
 
       //get responsibles
       const responsibles = await this.commonService.getResponsibles(
-        this.preauthorizeService,
+        this.projectResponsablesService,
         employee_id,
       );
 
@@ -81,14 +81,26 @@ export class ContingenciesService {
         project_responsibles: responsibles,
       });
 
-      //send email
-      await this.mailService.sendUserConfirmation(
-        'hola perro, ven mañana a la oficina',
-        {
-          email: 'martin.gaytan@improving.com',
-          name: 'chavin gaytan',
-        },
-      );
+      //send email to the responsibles of preauthorization
+      for (const responsible of responsibles) {
+        //get token with informaiton
+        const url = await this.commonService.generateUrlJWTForEmail({
+          email_responsible: responsible.email,
+          id_request: contigency._id,
+          folio: folio,
+          dates: [String(createContingencyDto.date)],
+          requestType: 'Contingency',
+        });
+
+        await this.mailService.sendUserConfirmation({
+          responsible_name: responsible.name,
+          responsible_email: responsible.email,
+          employee_name: name,
+          requestType: 'Contingency',
+          folio,
+          url,
+        });
+      }
 
       return { folio: contigency.folio };
     } catch (error: any) {

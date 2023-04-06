@@ -4,14 +4,34 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { DateTime } from 'luxon';
-import { Model } from 'mongoose';
-import { PreauthorizationsService } from 'src/preauthorizations/preauthorizations.service';
-import { TypeRequest } from './interfaces/type-request-folio.interface';
+import mongoose, { Model } from 'mongoose';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import {
+  RequestType,
+  TypeRequestFolio,
+} from './interfaces/type-request.interface';
+import { TokenPreauthorization } from './entities/token-preauthorization.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { ProjectResponsablesService } from 'src/project-responsables/project-responsables.service';
 
 @Injectable()
 export class CommonService {
+  constructor(
+    //generate token to encrypt the payload of url preauthorization
+    private readonly jwtTokenService: JwtService,
+    //get variables from env
+    private readonly configService: ConfigService,
+    //save the url for preauthorizations
+    @InjectModel(TokenPreauthorization.name)
+    private readonly tokenPreauthorizationModel: Model<TokenPreauthorization>,
+  ) {}
+
   //functon to generate folio according to the type of request
-  async generateFolio(model: Model<any>, type: TypeRequest[keyof TypeRequest]) {
+  async generateFolio(
+    model: Model<any>,
+    type: TypeRequestFolio[keyof TypeRequestFolio],
+  ) {
     //search last today's documents
     //TODO: get rid of the hide dependency 'DateTime' from luxon using adapt pattern design
     const today = DateTime.now().setLocale('zh').toLocaleString();
@@ -79,25 +99,22 @@ export class CommonService {
     throw new InternalServerErrorException('Server Error, check logs');
   }
 
-  async getResponsibles(model: PreauthorizationsService, employee_id: string) {
+  async getResponsibles(
+    service: ProjectResponsablesService,
+    employee_id: string,
+  ) {
     //get responsibles for project--------------------------------------------------
-    const resopnsiblesArray = await model.findAll(employee_id);
+    const responsiblesArray = await service.findAll(employee_id);
 
-    if (resopnsiblesArray.length < 1) {
+    if (responsiblesArray.length < 1) {
       throw new BadRequestException(
         'You need to register at least one project responsible',
       );
     }
 
-    const formatProjectResponsibles = resopnsiblesArray.map(
-      ({
-        id_responsible: id,
-        name_responsible: name,
-        email_responsible: email,
-        project_role,
-      }) => {
+    const formatProjectResponsibles = responsiblesArray.map(
+      ({ name_responsible: name, email_responsible: email, project_role }) => {
         return {
-          id,
           name,
           email,
           project_role,
@@ -113,5 +130,46 @@ export class CommonService {
     const weekday = DateTime.fromISO(date).weekday;
     // validate that day is not part of the weekend
     if (weekday > 5) throw new BadRequestException('The day is a weekend day');
+  }
+
+  async generateUrlJWTForEmail(data: {
+    email_responsible: string;
+    id_request: mongoose.Types.ObjectId;
+    folio: string;
+    dates: string[];
+    requestType: RequestType;
+  }) {
+    try {
+      const { email_responsible, id_request, folio, dates, requestType } = data;
+
+      const token = this.jwtTokenService.sign({
+        email_responsible,
+        id_request,
+        folio,
+        dates,
+        requestType,
+      });
+
+      const base = this.configService.get('request_preauthorization_url_base');
+      const url = `${base}?hash=${token}`;
+
+      await this.tokenPreauthorizationModel.create<TokenPreauthorization>({
+        token,
+      });
+
+      return url;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async deleteUrlJWTForEmail(token) {
+    try {
+      await this.tokenPreauthorizationModel.deleteMany({
+        token,
+      });
+    } catch (error) {
+      this.handleError(error);
+    }
   }
 }

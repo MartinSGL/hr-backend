@@ -6,8 +6,8 @@ import { Contingency, ContingencySchema } from './entities/contingency.entity';
 import { CommonModule } from 'src/common/common.module';
 import { UsersModule } from 'src/users/users.module';
 import { ContingenciesControllerTM } from './contingencies-tm.controller';
-import { PreauthorizationsModule } from '../preauthorizations/preauthorizations.module';
 import { MailModule } from '../mail/mail.module';
+import { ProjectResponsablesModule } from '../project-responsables/project-responsables.module';
 
 @Module({
   controllers: [ContingenciesController, ContingenciesControllerTM],
@@ -21,8 +21,16 @@ import { MailModule } from '../mail/mail.module';
       },
     ]),
     UsersModule,
-    PreauthorizationsModule,
     MailModule,
+    ProjectResponsablesModule,
+  ],
+  exports: [
+    MongooseModule.forFeature([
+      {
+        name: Contingency.name,
+        schema: ContingencySchema,
+      },
+    ]),
   ],
 })
 export class ContingenciesModule {}
