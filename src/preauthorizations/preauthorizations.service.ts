@@ -49,7 +49,7 @@ export class PreauthorizationsService {
           { arrayFilters: [{ 'el.email': email }] },
         );
       } else if (status === 'rejected') {
-        if (!observations || observations.trim() === '') {
+        if (!observations) {
           throw new BadRequestException('observations must be not empty');
         }
         await model.updateOne(
