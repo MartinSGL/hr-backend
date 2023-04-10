@@ -168,9 +168,6 @@ export class ContingenciesService {
       this.validateWeekEndDay(String(updateContingencyDto.date));
       // validate day is not already taken
       await this.valitateDay(employee_id, updateContingencyDto.date, id);
-      // validate user has no more than 3 days
-      await this.valitateNumberOfDays(employee_id);
-
       /*----------------------------------------------------------------------------* */
 
       //delete old tokens
