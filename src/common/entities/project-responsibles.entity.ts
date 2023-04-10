@@ -13,7 +13,7 @@ export class ProjectResponsibles {
   @Prop({ require: true })
   name: string;
 
-  @Prop({ require: true, unique: true })
+  @Prop({ require: true })
   email: string;
 
   @Prop({ require: true, enum: project_roles })

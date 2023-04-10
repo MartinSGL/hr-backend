@@ -34,6 +34,13 @@
             "email":"carlos.diaz@improving.com",
             "password": "12345",
             "date_admission": "2022/02/08"
+        },
+        {
+            "id":"285d339a-d240-11ed-92b4-f7222a7abd1r",
+            "name":"Carlos Loaiza",
+            "email":"carlos.loaiza@improving.com",
+            "password": "12345",
+            "date_admission": "2018/02/08"
         }
     ]
 }
