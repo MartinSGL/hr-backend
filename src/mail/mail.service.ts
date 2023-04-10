@@ -15,7 +15,7 @@ interface Mail {
 export class MailService {
   constructor(private mailerService: MailerService) {}
 
-  async sendUserConfirmation(data: Mail) {
+  async sendUserRequesMail(data: Mail) {
     const {
       responsible_name,
       responsible_email,

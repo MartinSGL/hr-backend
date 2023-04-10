@@ -1,4 +1,5 @@
-import { IsOptional, IsString, IsNotEmpty, IsEnum } from 'class-validator';
+import { Transform, TransformFnParams } from 'class-transformer';
+import { IsOptional, IsNotEmpty, IsEnum } from 'class-validator';
 import { Status, status } from 'src/common/interfaces/status.interface';
 
 export class UpdateStatusContingencyDto {
@@ -7,6 +8,6 @@ export class UpdateStatusContingencyDto {
 
   @IsOptional()
   @IsNotEmpty()
-  @IsString()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
   observations?: string;
 }

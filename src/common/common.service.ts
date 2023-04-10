@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { DateTime } from 'luxon';
-import mongoose, { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -134,7 +134,7 @@ export class CommonService {
 
   async generateUrlJWTForEmail(data: {
     email_responsible: string;
-    id_request: mongoose.Types.ObjectId;
+    id_request: Types.ObjectId;
     folio: string;
     dates: string[];
     requestType: RequestType;
@@ -154,6 +154,7 @@ export class CommonService {
       const url = `${base}?hash=${token}`;
 
       await this.tokenPreauthorizationModel.create<TokenPreauthorization>({
+        id_request,
         token,
       });
 
@@ -163,10 +164,22 @@ export class CommonService {
     }
   }
 
+  //every time status of preauthorizations is changed by email
+  //token is deleted from collection to avoid use token-url again
   async deleteUrlJWTForEmail(token) {
     try {
-      await this.tokenPreauthorizationModel.deleteMany({
+      await this.tokenPreauthorizationModel.deleteOne({
         token,
+      });
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async deleteUrlJWTForEmailByRequest(id_request: string) {
+    try {
+      await this.tokenPreauthorizationModel.deleteMany({
+        id_request,
       });
     } catch (error) {
       this.handleError(error);

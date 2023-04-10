@@ -1,3 +1,4 @@
+import { Transform, TransformFnParams } from 'class-transformer';
 import {
   IsEmail,
   IsEnum,
@@ -23,7 +24,7 @@ export class UpdateStatusPreauthorizationDto {
 
   @IsOptional()
   @IsNotEmpty()
-  @IsString()
+  @Transform(({ value }: TransformFnParams) => value?.trim())
   observations?: string;
 
   @IsEnum(request_type)
