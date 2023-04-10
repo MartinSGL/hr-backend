@@ -173,7 +173,7 @@ export class ContingenciesService {
 
       /*----------------------------------------------------------------------------* */
 
-      //delete old tokens to create new ones
+      //delete old tokens
       await this.commonService.deleteUrlJWTForEmailByRequest(id);
 
       //get responsibles
@@ -231,6 +231,10 @@ export class ContingenciesService {
     if (contingency.status === 'approved') {
       return this.updateStatus(id, { status: 'canceled' }, id_tm);
     }
+
+    //delete old tokens
+    await this.commonService.deleteUrlJWTForEmailByRequest(id);
+
     //delete document in case another status
     const contingencyDeleted = await contingency.deleteOne({
       _id: id,

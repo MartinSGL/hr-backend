@@ -48,6 +48,8 @@ export class PreauthorizationsService {
           { $set: { 'project_responsibles.$[el].preauthorize': status } },
           { arrayFilters: [{ 'el.email': email }] },
         );
+        //delete token (expire the url) in case approval preuthorization
+        await this.commonService.deleteUrlJWTForEmail(token);
       } else if (status === 'rejected') {
         if (!observations) {
           throw new BadRequestException('observations must be not empty');
@@ -62,8 +64,9 @@ export class PreauthorizationsService {
           },
           { arrayFilters: [{ 'el.email': email }] },
         );
+        //delete all tokens (expire the url) in case rejected preuthorization
+        await this.commonService.deleteUrlJWTForEmailByRequest(id);
       }
-      await this.commonService.deleteUrlJWTForEmail(token);
       return `Request has been ${updateStatusPreauthorizationDto.status}`;
     } catch (error) {
       //global function to handdle the error
