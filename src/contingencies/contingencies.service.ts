@@ -83,7 +83,7 @@ export class ContingenciesService {
 
       //send email to the responsibles of preauthorization
       for (const responsible of responsibles) {
-        //get token with informaiton
+        //get token with payload information and save it for each project responsible
         const url = await this.commonService.generateUrlJWTForEmail({
           email_responsible: responsible.email,
           id_request: contigency._id,
@@ -91,8 +91,8 @@ export class ContingenciesService {
           dates: [String(createContingencyDto.date)],
           requestType: 'Contingency',
         });
-
-        await this.mailService.sendUserConfirmation({
+        //send emails once token is generated and saves
+        await this.mailService.sendUserRequesMail({
           responsible_name: responsible.name,
           responsible_email: responsible.email,
           employee_name: name,
@@ -168,19 +168,52 @@ export class ContingenciesService {
       this.validateWeekEndDay(String(updateContingencyDto.date));
       // validate day is not already taken
       await this.valitateDay(employee_id, updateContingencyDto.date, id);
-      // validate user has no more than 3 days
-      await this.valitateNumberOfDays(employee_id);
-
       /*----------------------------------------------------------------------------* */
+
+      //delete old tokens
+      await this.commonService.deleteUrlJWTForEmailByRequest(id);
+
+      //get responsibles
+      const responsibles = await this.commonService.getResponsibles(
+        this.projectResponsablesService,
+        employee_id,
+      );
+
       //find and update the document
       const contingencyUpdated = await this.contingencyModel.findOneAndUpdate(
         { _id: id, employee_id: employee_id },
-        { ...updateContingencyDto, status: 'pending' },
+        {
+          ...updateContingencyDto,
+          status: 'pending',
+          'project_responsibles.$[].preauthorize': 'pending',
+        },
         { new: true },
       );
       //return exception in case contingency is not found
       if (!contingencyUpdated)
         throw new BadRequestException('Contingency is not valid');
+
+      //send email to the responsibles of preauthorization
+      for (const responsible of responsibles) {
+        //get token with payload information and save it for each project responsible
+        const url = await this.commonService.generateUrlJWTForEmail({
+          email_responsible: responsible.email,
+          id_request: contingencyUpdated._id,
+          folio: contingencyUpdated.folio,
+          dates: [String(contingencyUpdated.date)],
+          requestType: 'Contingency',
+        });
+        //send emails once token is generated and saves
+        await this.mailService.sendUserRequesMail({
+          responsible_name: responsible.name,
+          responsible_email: responsible.email,
+          employee_name: contingencyUpdated.name_employee,
+          requestType: 'Contingency',
+          folio: contingencyUpdated.folio,
+          url,
+        });
+      }
+
       return { folio: contingencyUpdated.folio };
     } catch (error: any) {
       //global function to handdle the error
@@ -195,6 +228,10 @@ export class ContingenciesService {
     if (contingency.status === 'approved') {
       return this.updateStatus(id, { status: 'canceled' }, id_tm);
     }
+
+    //delete old tokens
+    await this.commonService.deleteUrlJWTForEmailByRequest(id);
+
     //delete document in case another status
     const contingencyDeleted = await contingency.deleteOne({
       _id: id,
