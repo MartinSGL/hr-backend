@@ -58,7 +58,7 @@ export class ProjectResponsablesService {
     try {
       const preauthorizationDeleted =
         await this.preauthorizationModel.findOneAndRemove({
-          id,
+          _id: id,
           id_employee: user_id,
         });
       return preauthorizationDeleted;
