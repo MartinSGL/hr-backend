@@ -188,7 +188,7 @@ export class ContingenciesService {
         {
           ...updateContingencyDto,
           status: 'pending',
-          'responsibles.$[].authorize': 'pending',
+          'project_responsibles.$[].preauthorize': 'pending',
         },
         { new: true },
       );
